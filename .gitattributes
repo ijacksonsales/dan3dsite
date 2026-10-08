@@ -1,0 +1,6 @@
+* text=auto eol=lf
+*.ico binary
+*.png binary
+*.glb binary
+*.stl binary
+*.3mf binary

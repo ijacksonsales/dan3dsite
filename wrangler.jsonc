@@ -1,0 +1,25 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "main": ".open-next/worker.js",
+  "name": "dan3d",
+  "compatibility_date": "2026-10-08",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS",
+  },
+  "services": [
+    {
+      // Self-reference service binding, the service name must match the worker name
+      // see https://opennext.js.org/cloudflare/caching
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "dan3d",
+    },
+  ],
+  "observability": {
+    "enabled": true,
+  },
+  // Public vars (NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY) are
+  // inlined at build time from .env / Workers Builds build variables.
+  // SUPABASE_SERVICE_ROLE_KEY is a secret: `wrangler secret put SUPABASE_SERVICE_ROLE_KEY`.
+}

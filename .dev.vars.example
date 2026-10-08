@@ -1,0 +1,4 @@
+# Copy to .dev.vars (git-ignored). Runtime secrets for the Worker in local dev/preview.
+# In production: `npx wrangler secret put SUPABASE_SERVICE_ROLE_KEY`.
+NEXTJS_ENV=development
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
