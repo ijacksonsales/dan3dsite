@@ -157,10 +157,10 @@ create table settings (            -- linha única
 - [x] Tailwind + shadcn/ui, ESLint, Prettier
 - [x] `wrangler.jsonc` com `nodejs_compat` nas compatibility flags; scripts `preview` (roda o build OpenNext localmente no runtime do Workers) e `deploy`
 - [x] `next.config`: `images.unoptimized: true` (o otimizador padrão do Next não roda no Workers; as imagens já chegam comprimidas pelo admin)
-- [ ] Projeto Supabase; variáveis `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` e `SUPABASE_SERVICE_ROLE_KEY` (esta só no servidor, como _secret_ do Worker via `wrangler secret put`, nunca exposta ao cliente). Localmente, em `.dev.vars`
+- [x] Projeto Supabase; variáveis `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` e `SUPABASE_SERVICE_ROLE_KEY` (esta só no servidor, como _secret_ do Worker via `wrangler secret put`, nunca exposta ao cliente). Localmente, em `.dev.vars`
 - [x] `@supabase/ssr` com clients separados para server components, client components e middleware
-- [ ] Migrations da seção 4 + seed com 2 categorias e 1 produto de exemplo — _escritas; falta aplicar no projeto Supabase_
-- [ ] Repositório no GitHub conectado ao Workers Builds (deploy automático na `main`)
+- [x] Migrations da seção 4 + seed com 2 categorias e 1 produto de exemplo — _aplicadas em 2026-10-09 com `supabase db push --include-seed`_
+- [ ] Repositório no GitHub conectado ao Workers Builds (deploy automático na `main`) — _repositório criado e com push; falta conectar o Workers Builds_
 - [ ] DNS do `jailabs.com.br` migrado para a Cloudflare (ver §2) + Custom Domain `dan3d.jailabs.com.br` no Worker
 - [x] Conferir o tamanho do bundle no `wrangler deploy` (ver armadilhas) — _fase 0: 1,15 MiB gzip_
 

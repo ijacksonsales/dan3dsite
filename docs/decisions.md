@@ -45,3 +45,18 @@ Formato: data · decisão · motivo.
 ## 2026-10-08 · Testes com Vitest
 
 - **Decisão:** Vitest para testes unitários (confirmado com o dono do projeto).
+
+## 2026-10-09 · Variáveis públicas em `.env` (não `.env.local`)
+
+- **Decisão:** localmente, `NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_ANON_KEY` ficam em `.env` (ignorado pelo git, assim como `.env.local`). O `.env.example` mantém só placeholders.
+- **Motivo:** foi onde o dono do projeto configurou; o Next lê os dois arquivos.
+
+## 2026-10-09 · Migrations aplicadas com `supabase db push --db-url`
+
+- **Decisão:** `SUPABASE_DB_URL` (string de conexão do Postgres, com a senha do banco) fica em `.dev.vars`, e as migrations são aplicadas com `npx supabase db push --db-url "$SUPABASE_DB_URL"`, que registra o histórico em `supabase_migrations.schema_migrations`.
+- **Motivo:** a autorização OAuth do MCP do Supabase falhou ("Unrecognized client_id"); o CLI com a URL do banco não exige login nem `supabase link`.
+
+## 2026-10-09 · `.com.br` na Cloudflare: só DNS, sem transferência
+
+- **Decisão:** adicionar `jailabs.com.br` à Cloudflare com "Add site anyway" (zona DNS no plano Free) e trocar os nameservers no Registro.br, que continua sendo o registrador.
+- **Motivo:** a Cloudflare não aceita transferir registro de `.com.br`, mas o plano só precisa do DNS na Cloudflare para o Custom Domain do Worker.
