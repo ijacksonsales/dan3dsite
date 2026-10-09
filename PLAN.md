@@ -160,8 +160,8 @@ create table settings (            -- linha única
 - [x] Projeto Supabase; variáveis `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` e `SUPABASE_SERVICE_ROLE_KEY` (esta só no servidor, como _secret_ do Worker via `wrangler secret put`, nunca exposta ao cliente). Localmente, em `.dev.vars`
 - [x] `@supabase/ssr` com clients separados para server components, client components e middleware
 - [x] Migrations da seção 4 + seed com 2 categorias e 1 produto de exemplo — _aplicadas em 2026-10-09 com `supabase db push --include-seed`_
-- [ ] Repositório no GitHub conectado ao Workers Builds (deploy automático na `main`) — _repositório criado e com push; falta conectar o Workers Builds_
-- [ ] DNS do `jailabs.com.br` migrado para a Cloudflare (ver §2) + Custom Domain `dan3d.jailabs.com.br` no Worker
+- [x] Repositório no GitHub conectado ao Workers Builds (deploy automático na `main`)
+- [x] DNS do `jailabs.com.br` migrado para a Cloudflare (ver §2) + Custom Domain `dan3d.jailabs.com.br` no Worker — _em 2026-10-09; Custom Domain declarado em `wrangler.jsonc`_
 - [x] Conferir o tamanho do bundle no `wrangler deploy` (ver armadilhas) — _fase 0: 1,15 MiB gzip_
 
 **Pronto quando:** a página "hello" abre em `https://dan3d.jailabs.com.br` e lê o produto de exemplo do banco.
@@ -256,7 +256,7 @@ Mobile-first. Desempenho alvo: Lighthouse mobile ≥ 90 em Performance nas pági
 
 ### Fase 4 — Produção e testes
 
-- [ ] Domínio `dan3d.jailabs.com.br` com HTTPS no Worker (certificado é automático no Custom Domain)
+- [x] Domínio `dan3d.jailabs.com.br` com HTTPS no Worker (certificado é automático no Custom Domain) — _feito na fase 0_
 - [ ] Criar a usuária admin (inserir o `user_id` em `admins` via SQL/seed; **não existe cadastro público**)
 - [ ] Checklist em dispositivos reais:
   - Galaxy Tab S9 FE+ (admin completo + AR)
