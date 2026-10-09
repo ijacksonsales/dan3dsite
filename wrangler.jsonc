@@ -16,6 +16,12 @@
       "service": "dan3d",
     },
   ],
+  // Custom Domain: Cloudflare creates the DNS record and the certificate.
+  // The jailabs.com.br zone must be on this account (PLAN.md §2).
+  "routes": [{ "pattern": "dan3d.jailabs.com.br", "custom_domain": true }],
+  // Keep *.workers.dev and per-version preview URLs for HTTPS/AR testing (PLAN.md §6.4).
+  "workers_dev": true,
+  "preview_urls": true,
   "observability": {
     "enabled": true,
   },
