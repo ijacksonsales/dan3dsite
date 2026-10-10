@@ -7,9 +7,13 @@ import { getSupabasePublicEnv } from "@/lib/supabase/env";
 
 import "./globals.css";
 
+// Fonts are not preloaded: on a slow phone connection they would compete with
+// the main photo/banner (LCP). `display: swap` + the metric-matched fallback
+// that next/font generates keep the text readable and stable meanwhile.
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  preload: false,
 });
 
 // Only used by the dev/admin screens: don't preload it on store pages.
@@ -24,6 +28,7 @@ const jost = Jost({
   variable: "--font-jost",
   subsets: ["latin"],
   weight: ["400", "500"],
+  preload: false,
 });
 
 export const metadata: Metadata = {
