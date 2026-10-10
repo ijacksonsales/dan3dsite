@@ -60,3 +60,17 @@ Formato: data · decisão · motivo.
 
 - **Decisão:** adicionar `jailabs.com.br` à Cloudflare com "Add site anyway" (zona DNS no plano Free) e trocar os nameservers no Registro.br, que continua sendo o registrador.
 - **Motivo:** a Cloudflare não aceita transferir registro de `.com.br`, mas o plano só precisa do DNS na Cloudflare para o Custom Domain do Worker.
+
+## 2026-10-09 · Fase 1: conversor 3D
+
+- **`three@0.183.2` fixo (não a 0.186):** o `@google/model-viewer@4.4.0` declara `three@^0.183.0` (em 0.x isso aceita só 0.183.\*). Com a mesma versão, há uma cópia só do three no navegador. Subir o three junto com o model-viewer.
+- **GLB montado com `@gltf-transform`, sem `GLTFExporter`:** o STL é lido com o `STLLoader` do three, mas a cena glTF é criada direto no `@gltf-transform/core` (um material por cor de filamento). Assim o pipeline inteiro roda em Node nos testes e evita uma cópia extra da geometria no tablet.
+- **3MF com parser próprio desde o início:** o `ThreeMFLoader` não segue `p:path` (production extension) do Bambu Studio. A malha é lida com um tokenizador por regex, em vez de árvore XML, porque o XML de um 3MF grande tem centenas de MB; o `fast-xml-parser` fica para os `.config` pequenos do Bambu. Partes com `subtype` diferente de `normal_part` (modificadores, bloqueadores) são ignoradas.
+- **Texto do zip com `TextDecoder`:** a decodificação UTF-8 do JSZip é JS puro e era a parte mais lenta no navegador (3,9 s → 2,4 s num 3MF de 620 mil triângulos).
+- **Convenção da parede:** peças de parede (placas, relevos) são impressas deitadas de costas. Para `ar_placement = wall` não há rotação: o +Z do fatiador vira a frente (glTF +Z, para fora da parede) e o +Y vira o topo; o modelo fica centrado em X/Y com as costas em z = 0. Para `floor`: rotação −90° em X, centrado em X/Z, base em y = 0. **Validar com uma peça real.** Como a orientação depende disso, a escolha chão/parede precisa ser feita antes de converter (ou converter de novo; o arquivo lido fica em memória no worker).
+- **Normais com ângulo de vinco (40°):** curvas suaves, arestas vivas (base reta, quinas) continuam marcadas. Os vértices só são duplicados nos vincos, então a malha continua indexada.
+- **Simplificação:** só quando passa de 100 mil triângulos; tenta erros crescentes (0,1% → 10% do tamanho) até caber.
+- **Compressão meshopt opcional (`compress`, padrão ligado):** não encontrei confirmação de que o Scene Viewer (AR do Android quando não há WebXR) lê `EXT_meshopt_compression`. Testar no Android; se falhar, salvar o GLB sem compressão (fica ~3× maior, ainda bem abaixo de 3 MB com 100 mil triângulos).
+- **`meshoptDecoderLocation` do model-viewer:** sem ele o model-viewer não decodifica meshopt. Ele só carrega a URL como script e usa o decodificador que já vem embutido, então a URL aponta para um arquivo local quase vazio (`public/model-viewer/meshopt-decoder.js`), sem depender de CDN.
+- **model-viewer via `next/dynamic` com `ssr: false`** (`components/model-viewer/index.tsx`): um `import()` dentro de `useEffect` ainda punha o model-viewer (com o three) no bundle do servidor (+0,5 MB gzip). `lib/model-converter/index.ts` também não pode importar o pipeline (só `constants.ts`/tipos). Worker: 1,18 MB → 1,29 MB gzip.
+- **`/dev/converter`:** liberada em `next dev`; em produção, só para admin logado (`is_admin()`), senão 404. Para testar no tablet/celular antes do login do admin (fase 3): `next dev --experimental-https` pelo IP da rede local.

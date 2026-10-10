@@ -198,10 +198,10 @@ Pipeline:
 
 **Pronto quando:**
 
-- Um STL de referência com altura conhecida (ex.: 150 mm) gera um GLB cuja altura medida no AR, num Android e num iPhone, bate com a peça física (tolerância ±2%).
-- Um 3MF do Bambu Studio com partes em filamentos diferentes aparece com as cores corretas.
-- A conversão de um arquivo de ~30 MB termina no Galaxy Tab S9 FE+ sem travar a interface.
-- Testes unitários cobrem a escala, a rotação de eixo e o assentamento no chão (bbox antes e depois).
+- [ ] Um STL de referência com altura conhecida (ex.: 150 mm) gera um GLB cuja altura medida no AR, num Android e num iPhone, bate com a peça física (tolerância ±2%). — _conversor pronto; falta medir em aparelho real_
+- [ ] Um 3MF do Bambu Studio com partes em filamentos diferentes aparece com as cores corretas. — _ok com 3MF sintético no formato do Bambu; falta um arquivo real_
+- [ ] A conversão de um arquivo de ~30 MB termina no Galaxy Tab S9 FE+ sem travar a interface. — _no PC: STL de 30 MB em ~3 s, sem travar (Web Worker); falta o tablet_
+- [x] Testes unitários cobrem a escala, a rotação de eixo e o assentamento no chão (bbox antes e depois). — _`lib/model-converter/*.test.ts`_
 
 ### Fase 2 — Vitrine pública
 
