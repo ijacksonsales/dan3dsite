@@ -207,23 +207,27 @@ Pipeline:
 
 Mobile-first. Desempenho alvo: Lighthouse mobile ≥ 90 em Performance nas páginas de home e produto.
 
-- [ ] **Layout:** header com logo e busca simples; menu de categorias; footer com WhatsApp e Instagram (de `settings`).
-- [ ] **Home:** carrossel de banners (respeitando datas, com imagem mobile quando houver, swipe por toque), faixa de destaques ordenada por `featured_order`, grade de categorias e produtos recentes.
-- [ ] **Categoria** `/c/[slug]`: grade de produtos.
-- [ ] **Produto** `/p/[slug]`:
+- [x] **Layout:** header com logo e busca simples; menu de categorias; footer com WhatsApp e Instagram (de `settings`). — _busca em `/busca`; categorias numa faixa de chips deslizável; logo em `public/brand/` (originais em `docs/brand/`)_
+- [x] **Home:** carrossel de banners (respeitando datas, com imagem mobile quando houver, swipe por toque), faixa de destaques ordenada por `featured_order`, grade de categorias e produtos recentes.
+- [x] **Categoria** `/c/[slug]`: grade de produtos.
+- [x] **Produto** `/p/[slug]`: — _falta testar o AR no celular (ver "Pronto quando")_
   - galeria de fotos com swipe e zoom;
   - nome, preço ou "sob consulta", medidas em cm, selo "sob encomenda";
   - **visualizador 3D** (`model-viewer`), carregado só no cliente, com `poster`, `loading="lazy"`, `camera-controls`, `ar`, `ar-modes="webxr scene-viewer quick-look"`, **`ar-scale="fixed"`**, `ar-placement` vindo do produto;
   - botão customizado no slot `ar-button`: **"Ver no meu espaço"**;
   - **peça de parede:** antes de abrir o AR, uma tela curta de orientação ("Aponte para a parede a cerca de 1 metro, com boa luz, e mova o celular devagar de um lado para o outro. Paredes lisas e portas podem demorar; se não aparecer, mire perto de um quadro, tomada ou batente."), com opção de não mostrar de novo (ver `docs/decisions.md`, 2026-10-10);
-  - no iPhone, usar o USDZ salvo no cadastro (`ios-src`) quando existir, em vez de gerar na hora;
+  - no iPhone, usar o USDZ salvo no cadastro (`ios-src`) quando existir, em vez de gerar na hora; — _pendente: depende da coluna `model_usdz_path` da fase 3_
   - no desktop (sem suporte a AR): QR code apontando para a URL da página, com o texto "Aponte a câmera do celular para ver em tamanho real";
   - botão **"Encomendar pelo WhatsApp"** → `https://wa.me/{numero}?text=` com nome, link e medidas da peça (encodeURIComponent).
-- [ ] **SEO:** `generateMetadata` por produto, imagem OG a partir da primeira foto, `sitemap.xml`, `robots.txt`.
-- [ ] **Renderização:** começar com **renderização dinâmica** (sem ISR) — as consultas ao Supabase são rápidas e a mudança feita no admin aparece na hora. ISR no OpenNext exige configurar cache incremental (R2) e cache de tags; só adotar se a CPU por requisição ou a latência virarem problema, e registrar a decisão em `docs/decisions.md`.
-- [ ] **Métricas:** registrar `product_view`, `ar_open` (evento `ar-status` do model-viewer) e `whatsapp_click` na tabela `events`, sem bloquear a navegação (fire-and-forget).
+- [x] **SEO:** `generateMetadata` por produto, imagem OG a partir da primeira foto, `sitemap.xml`, `robots.txt`.
+- [x] **Renderização:** começar com **renderização dinâmica** (sem ISR) — as consultas ao Supabase são rápidas e a mudança feita no admin aparece na hora. ISR no OpenNext exige configurar cache incremental (R2) e cache de tags; só adotar se a CPU por requisição ou a latência virarem problema, e registrar a decisão em `docs/decisions.md`.
+- [x] **Métricas:** registrar `product_view`, `ar_open` e `whatsapp_click` na tabela `events`, sem bloquear a navegação (fire-and-forget). — _`ar_open` registrado no toque em "Ver no meu espaço", não no `ar-status` (ver `docs/decisions.md`)_
 
 **Pronto quando:** um produto publicado abre no celular, o AR funciona em Android e iPhone com tamanho fixo, e o botão do WhatsApp abre a conversa com a mensagem preenchida.
+
+- [ ] AR na página do produto testado no iPhone e no Android (produtos de exemplo: `/p/nossa-senhora-aparecida`, chão; `/p/placa-estrela-exemplo`, parede)
+- [ ] Número do WhatsApp gravado em `settings` e botão testado — _número gravado em 2026-10-10; falta tocar no botão pelo celular_
+- [x] Lighthouse mobile ≥ 90 em Performance — _no `npm run preview` local: home 92–93, produto 88–92 (varia entre rodadas); medir de novo no domínio publicado_
 
 ### Fase 3 — Painel admin (`/admin`)
 

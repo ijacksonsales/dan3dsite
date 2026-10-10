@@ -33,6 +33,12 @@ export interface ModelViewerProps {
   arLabel?: string;
   className?: string;
   onArStatus?: (status: ArStatus) => void;
+  /**
+   * Runs instead of opening AR when the AR button is tapped; call `openAr`
+   * to continue (e.g. after a short guidance screen). Call it from a tap
+   * handler: iOS only opens Quick Look from a user gesture.
+   */
+  beforeAr?: (openAr: () => void) => void;
   ref?: Ref<ModelViewerElement>;
 }
 
@@ -48,9 +54,11 @@ export function ModelViewer({
   arLabel = "Ver no meu espaço",
   className,
   onArStatus,
+  beforeAr,
   ref,
 }: ModelViewerProps) {
   const elementRef = useRef<ModelViewerElement | null>(null);
+  const arButtonRef = useRef<HTMLButtonElement>(null);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
@@ -69,6 +77,21 @@ export function ModelViewer({
     element.addEventListener("ar-status", listener);
     return () => element.removeEventListener("ar-status", listener);
   }, [onArStatus, ready]);
+
+  // model-viewer opens AR from a click listener inside its shadow DOM, which
+  // runs before React's delegated handlers. A native listener on the slotted
+  // button sees the click first and can stop it from reaching that listener.
+  useEffect(() => {
+    const button = arButtonRef.current;
+    if (!button || !beforeAr) return;
+    const listener = (event: MouseEvent) => {
+      event.preventDefault();
+      event.stopPropagation();
+      beforeAr(() => void elementRef.current?.activateAR());
+    };
+    button.addEventListener("click", listener);
+    return () => button.removeEventListener("click", listener);
+  }, [beforeAr, ready]);
 
   return (
     <model-viewer
@@ -91,6 +114,7 @@ export function ModelViewer({
       className={cn("block h-full w-full bg-muted", className)}
     >
       <button
+        ref={arButtonRef}
         slot="ar-button"
         type="button"
         className="absolute right-3 bottom-3 min-h-12 rounded-full bg-primary px-5 text-base font-medium text-primary-foreground shadow-md"
