@@ -227,7 +227,7 @@ Mobile-first. Desempenho alvo: Lighthouse mobile ≥ 90 em Performance nas pági
 
 - [ ] AR na página do produto testado no iPhone e no Android (produtos de exemplo: `/p/nossa-senhora-aparecida`, chão; `/p/placa-estrela-exemplo`, parede)
 - [ ] Número do WhatsApp gravado em `settings` e botão testado — _número gravado em 2026-10-10; falta tocar no botão pelo celular_
-- [ ] Lighthouse mobile ≥ 90 em Performance — _local (`npm run preview`): home 92–93, produto 88–92; publicado (2026-10-10): home 81–88, produto 86–89. O que pesa: tempo de resposta do Worker (330–1400 ms, consultas ao Supabase) e a conexão com o Storage do Supabase para a imagem principal_
+- [ ] Lighthouse mobile ≥ 90 em Performance — _publicado, depois do placement no Oregon e sem preload de fontes (2026-10-10): home 84–85, produto 81–85; acessibilidade, boas práticas e SEO em 100. Falta a imagem principal vir do mesmo domínio (ver `docs/decisions.md`)_
 
 ### Fase 3 — Painel admin (`/admin`)
 
