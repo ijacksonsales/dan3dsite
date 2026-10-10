@@ -93,3 +93,9 @@ Formato: data · decisão · motivo.
 - **Métricas direto para o REST do Supabase** (`fetch` com `keepalive`), sem `supabase-js` no navegador: menos JavaScript e o registro do clique no WhatsApp não se perde quando a página muda.
 - **Desempenho:** o model-viewer (three.js, ~225 KB) só carrega quando a área do 3D chega perto da tela; `preconnect` para o Supabase (com e sem CORS: fotos vs. modelo/métricas); fonte mono sem preload. Lighthouse mobile no `npm run preview`: home 92–93, produto 88–92. O Worker foi de 1,29 para 1,57 MiB gzip (limite do plano gratuito: 3 MiB).
 - **Dados de exemplo no Supabase (projeto de produção):** fotos e modelo 3D gerados para "Nossa Senhora Aparecida", um banner de exemplo e o produto "Placa Estrela (exemplo)" (`00000000-0000-4000-8000-000000000102`, parede, para testar a orientação). Tudo marcado como exemplo; apagar antes de abrir a loja (fase 4), junto com os arquivos em `models/` e `images/` dessas pastas e em `images/banners/`.
+
+## 2026-10-10 · Worker rodando perto do Supabase (placement)
+
+- **Decisão:** `placement: { mode: "targeted", region: "aws:us-west-2" }` no `wrangler.jsonc`, para o Worker rodar perto do Supabase (West US, Oregon).
+- **Motivo:** no domínio publicado, o Lighthouse deu 81–89 em Performance (meta ≥ 90), com o HTML levando 0,4–1,4 s. Cada página faz várias consultas ao Supabase; com o Worker no Brasil (edge GIG), cada consulta cruzava o continente. Com o Worker no Oregon, só o HTML pronto faz essa viagem, uma vez. Arquivos estáticos (`/_next`, `/brand`) continuam servidos pela borda.
+- **Se não bastar:** guardar em cache as consultas que se repetem em toda página (categorias e configurações) ou mudar o projeto Supabase para São Paulo (exige migrar o banco e o Storage).
