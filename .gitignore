@@ -55,3 +55,5 @@ supabase/.branches
 
 # local test models (STL/3MF)
 /fixtures
+
+certificates

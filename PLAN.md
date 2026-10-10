@@ -198,7 +198,7 @@ Pipeline:
 
 **Pronto quando:**
 
-- [ ] Um STL de referência com altura conhecida (ex.: 150 mm) gera um GLB cuja altura medida no AR, num Android e num iPhone, bate com a peça física (tolerância ±2%). — _conversor pronto; falta medir em aparelho real_
+- [ ] Um STL de referência com altura conhecida (ex.: 150 mm) gera um GLB cuja altura medida no AR, num Android e num iPhone, bate com a peça física (tolerância ±2%). — _iPhone ok (peça de parede, dentro de ±2%, 2026-10-10); falta Android_
 - [ ] Um 3MF do Bambu Studio com partes em filamentos diferentes aparece com as cores corretas. — _ok com 3MF sintético no formato do Bambu; falta um arquivo real_
 - [ ] A conversão de um arquivo de ~30 MB termina no Galaxy Tab S9 FE+ sem travar a interface. — _no PC: STL de 30 MB em ~3 s, sem travar (Web Worker); falta o tablet_
 - [x] Testes unitários cobrem a escala, a rotação de eixo e o assentamento no chão (bbox antes e depois). — _`lib/model-converter/*.test.ts`_
@@ -215,6 +215,8 @@ Mobile-first. Desempenho alvo: Lighthouse mobile ≥ 90 em Performance nas pági
   - nome, preço ou "sob consulta", medidas em cm, selo "sob encomenda";
   - **visualizador 3D** (`model-viewer`), carregado só no cliente, com `poster`, `loading="lazy"`, `camera-controls`, `ar`, `ar-modes="webxr scene-viewer quick-look"`, **`ar-scale="fixed"`**, `ar-placement` vindo do produto;
   - botão customizado no slot `ar-button`: **"Ver no meu espaço"**;
+  - **peça de parede:** antes de abrir o AR, uma tela curta de orientação ("Aponte para a parede a cerca de 1 metro, com boa luz, e mova o celular devagar de um lado para o outro. Paredes lisas e portas podem demorar; se não aparecer, mire perto de um quadro, tomada ou batente."), com opção de não mostrar de novo (ver `docs/decisions.md`, 2026-10-10);
+  - no iPhone, usar o USDZ salvo no cadastro (`ios-src`) quando existir, em vez de gerar na hora;
   - no desktop (sem suporte a AR): QR code apontando para a URL da página, com o texto "Aponte a câmera do celular para ver em tamanho real";
   - botão **"Encomendar pelo WhatsApp"** → `https://wa.me/{numero}?text=` com nome, link e medidas da peça (encodeURIComponent).
 - [ ] **SEO:** `generateMetadata` por produto, imagem OG a partir da primeira foto, `sitemap.xml`, `robots.txt`.
@@ -245,7 +247,8 @@ Mobile-first. Desempenho alvo: Lighthouse mobile ≥ 90 em Performance nas pági
   3. **Modelo 3D:** escolher STL/3MF → conversor da fase 1 com progresso → exibe **"Altura detectada: 15,2 cm · Largura: 8,0 cm — confere com a peça?"**, com opção de corrigir a altura real (reescala uniforme) → visualizador 3D de prévia → botão **"Testar no meu espaço"** (AR no próprio tablet) antes de salvar
   4. Tipo de exibição no AR: chão/mesa ou parede
   5. Poster: gerado automaticamente via `toDataURL()` do model-viewer, com opção de usar a capa
-  6. Salvar como rascunho ou publicar
+  6. **USDZ para iPhone:** gerado no navegador junto com o GLB (`USDZExporter` do three, com âncora horizontal ou vertical conforme o tipo de exibição) e salvo no bucket `models`; exige a coluna `model_usdz_path` (nova migration). Tira a espera da geração na hora em que o cliente toca em "Ver no meu espaço".
+  7. Salvar como rascunho ou publicar
 - [ ] **Destaques:** lista dos produtos destacados, reordenáveis com `@dnd-kit` (toque), e botão para adicionar a partir da lista de produtos.
 - [ ] **Banners:** CRUD com upload de imagem desktop e mobile, título e subtítulo opcionais, link (seletor de produto/categoria ou URL), período de exibição, ativo/inativo, ordem arrastável. Prévia de como fica no celular.
 - [ ] **Categorias:** CRUD + ordem arrastável.

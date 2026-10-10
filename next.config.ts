@@ -6,6 +6,9 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
   },
+  // Lets phones/tablets on the local network load dev assets when testing
+  // AR via `next dev --experimental-https -H 0.0.0.0` (private ranges only).
+  allowedDevOrigins: ["192.168.*.*", "10.*.*.*"],
   turbopack: {
     rules: {
       "*.css": {

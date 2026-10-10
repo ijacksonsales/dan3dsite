@@ -74,3 +74,10 @@ Formato: data · decisão · motivo.
 - **`meshoptDecoderLocation` do model-viewer:** sem ele o model-viewer não decodifica meshopt. Ele só carrega a URL como script e usa o decodificador que já vem embutido, então a URL aponta para um arquivo local quase vazio (`public/model-viewer/meshopt-decoder.js`), sem depender de CDN.
 - **model-viewer via `next/dynamic` com `ssr: false`** (`components/model-viewer/index.tsx`): um `import()` dentro de `useEffect` ainda punha o model-viewer (com o three) no bundle do servidor (+0,5 MB gzip). `lib/model-converter/index.ts` também não pode importar o pipeline (só `constants.ts`/tipos). Worker: 1,18 MB → 1,29 MB gzip.
 - **`/dev/converter`:** liberada em `next dev`; em produção, só para admin logado (`is_admin()`), senão 404. Para testar no tablet/celular antes do login do admin (fase 3): `next dev --experimental-https` pelo IP da rede local.
+
+## 2026-10-10 · AR de parede no iPhone: orientação e USDZ pré-gerado
+
+- **Teste:** disco de 20 × 20 × 2,5 cm como "peça na parede" no iPhone: tamanho real dentro de ±2%. Numa porta lisa, o Quick Look levou 2–3 min para achar o plano, às vezes sem conseguir; numa parede comum funcionou.
+- **Causa:** quem detecta a parede é o ARKit (Quick Look), fora do controle do site. Superfícies verticais lisas, de cor única ou brilhantes quase não têm pontos de referência para a câmera; iPhones sem LiDAR sofrem mais.
+- **Decisão:** (1) fase 2: para peças de parede, mostrar uma orientação curta antes de abrir o AR (distância de ~1 m, boa luz, mover devagar, mirar perto de batente/quadro/tomada); (2) fase 3: gerar o USDZ no navegador durante o cadastro e servir via `ios-src`, para cortar a espera da conversão feita pelo model-viewer na hora do toque. O USDZ precisa levar a âncora vertical (peça de parede) ou horizontal, porque o `ar-placement` do model-viewer não altera um USDZ pronto.
+- **Motivo:** a detecção do plano não pode ser acelerada pelo site; o que dá para fazer é orientar o cliente e eliminar a espera que depende de nós. A fase 1 (conversor) fica sem mudanças.
