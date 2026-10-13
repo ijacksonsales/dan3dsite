@@ -1,11 +1,10 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+import { ADMIN_HOME, ADMIN_LOGIN } from "@/lib/admin/paths";
 import type { Database } from "@/types/database";
 
 import { getSupabasePublicEnv } from "./env";
-
-const LOGIN_PATH = "/admin/login";
 
 /**
  * Refreshes the Supabase session cookies and guards /admin/*.
@@ -39,16 +38,24 @@ export async function updateSession(request: NextRequest) {
   const { data } = await supabase.auth.getClaims();
   const isLoggedIn = Boolean(data?.claims?.sub);
 
-  const { pathname } = request.nextUrl;
-  const isLoginPage = pathname === LOGIN_PATH;
+  const { pathname, search } = request.nextUrl;
+  const isLoginPage = pathname === ADMIN_LOGIN;
 
-  if (isLoginPage) return response;
-
-  if (!isLoggedIn) return redirectTo(request, response, LOGIN_PATH);
+  if (!isLoggedIn) {
+    if (isLoginPage) return response;
+    // Come back to the same page after logging in.
+    return redirectTo(request, response, ADMIN_LOGIN, {
+      next: pathname + search,
+    });
+  }
 
   const { data: isAdmin } = await supabase.rpc("is_admin");
+  if (isLoginPage) {
+    // Already logged in as admin: skip the form.
+    return isAdmin ? redirectTo(request, response, ADMIN_HOME) : response;
+  }
   if (!isAdmin)
-    return redirectTo(request, response, LOGIN_PATH, { erro: "sem-acesso" });
+    return redirectTo(request, response, ADMIN_LOGIN, { erro: "sem-acesso" });
 
   return response;
 }

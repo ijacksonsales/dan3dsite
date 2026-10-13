@@ -198,7 +198,7 @@ Pipeline:
 
 **Pronto quando:**
 
-- [ ] Um STL de referência com altura conhecida (ex.: 150 mm) gera um GLB cuja altura medida no AR, num Android e num iPhone, bate com a peça física (tolerância ±2%). — _iPhone ok (peça de parede, dentro de ±2%, 2026-10-10); falta Android_
+- [ ] Um STL de referência com altura conhecida (ex.: 150 mm) gera um GLB cuja altura medida no AR, num Android e num iPhone, bate com a peça física (tolerância ±2%). — _iPhone ok (peça de parede, dentro de ±2%, 2026-10-10); falta Android com ARCore (o POCO C71 testado em 2026-10-13 não tem suporte a AR)_
 - [ ] Um 3MF do Bambu Studio com partes em filamentos diferentes aparece com as cores corretas. — _ok com 3MF sintético no formato do Bambu; falta um arquivo real_
 - [ ] A conversão de um arquivo de ~30 MB termina no Galaxy Tab S9 FE+ sem travar a interface. — _no PC: STL de 30 MB em ~3 s, sem travar (Web Worker); falta o tablet_
 - [x] Testes unitários cobrem a escala, a rotação de eixo e o assentamento no chão (bbox antes e depois). — _`lib/model-converter/*.test.ts`_
@@ -225,7 +225,7 @@ Mobile-first. Desempenho alvo: Lighthouse mobile ≥ 90 em Performance nas pági
 
 **Pronto quando:** um produto publicado abre no celular, o AR funciona em Android e iPhone com tamanho fixo, e o botão do WhatsApp abre a conversa com a mensagem preenchida.
 
-- [ ] AR na página do produto testado no iPhone e no Android (produtos de exemplo: `/p/nossa-senhora-aparecida`, chão; `/p/placa-estrela-exemplo`, parede)
+- [ ] AR na página do produto testado no iPhone e no Android (produtos de exemplo: `/p/nossa-senhora-aparecida`, chão; `/p/placa-estrela-exemplo`, parede) — _iPhone ok nas duas peças (2026-10-13), mas ainda deixa redimensionar; Android: falta um aparelho com ARCore. Ajustes adiados, ver `docs/decisions.md` (2026-10-13)_
 - [ ] Número do WhatsApp gravado em `settings` e botão testado — _número gravado em 2026-10-10; falta tocar no botão pelo celular_
 - [ ] Lighthouse mobile ≥ 90 em Performance — _publicado, depois do placement no Oregon e sem preload de fontes (2026-10-10): home 84–85, produto 81–85; acessibilidade, boas práticas e SEO em 100. Falta a imagem principal vir do mesmo domínio (ver `docs/decisions.md`)_
 
@@ -233,7 +233,7 @@ Mobile-first. Desempenho alvo: Lighthouse mobile ≥ 90 em Performance nas pági
 
 **Diretrizes de UX** (valem para todo o painel):
 
-- Projetado para **tablet em retrato e paisagem**: alvos de toque ≥ 48 px, formulários em uma coluna, botão principal fixo no rodapé ("Salvar").
+- Projetado para **tablet ou celular em retrato e paisagem**: alvos de toque ≥ 48 px, formulários em uma coluna, botão principal fixo no rodapé ("Salvar"). Mas também que seja fácil para computador.
 - Linguagem simples, sem jargão: "Modelo 3D", e não "GLB"; "Rascunho / Publicado"; "Peça na parede / Peça no chão ou mesa".
 - Upload de foto com opção de **tirar foto com a câmera** (`accept="image/*"` + `capture` opcional) e da galeria.
 - Feedback sempre visível: progresso de upload e conversão, toast de sucesso, erros em português com orientação do que fazer.
@@ -242,8 +242,8 @@ Mobile-first. Desempenho alvo: Lighthouse mobile ≥ 90 em Performance nas pági
 
 **Telas:**
 
-- [ ] **Login:** e-mail + senha (magic link é ruim no tablet, porque abre em outro navegador), sessão persistente. Middleware protege `/admin/*` e verifica `is_admin()`.
-- [ ] **Início do admin:** atalhos grandes (Novo produto · Produtos · Destaques · Banners · Categorias · Configurações) + contagem de rascunhos.
+- [x] **Login:** e-mail + senha (magic link é ruim no tablet, porque abre em outro navegador), sessão persistente. Middleware protege `/admin/*` e verifica `is_admin()`. — _feito e testado (2026-10-13)_
+- [x] **Início do admin:** atalhos grandes (Novo produto · Produtos · Destaques · Banners · Categorias · Configurações) + contagem de rascunhos. — _feito; atalhos das telas ainda não prontas aparecem como "Em breve"_
 - [ ] **Produtos:** lista com busca, filtro por categoria e status, miniatura; ações rápidas (publicar/despublicar, destacar).
 - [ ] **Novo/editar produto:**
   1. Fotos (várias, reordenar arrastando, a primeira é a capa)
@@ -264,7 +264,7 @@ Mobile-first. Desempenho alvo: Lighthouse mobile ≥ 90 em Performance nas pági
 ### Fase 4 — Produção e testes
 
 - [x] Domínio `dan3d.jailabs.com.br` com HTTPS no Worker (certificado é automático no Custom Domain) — _feito na fase 0_
-- [ ] Criar a usuária admin (inserir o `user_id` em `admins` via SQL/seed; **não existe cadastro público**)
+- [ ] Criar a usuária admin (inserir o `user_id` em `admins` via SQL/seed; **não existe cadastro público**) — _script `node scripts/create-admin.mjs email`_
 - [ ] Checklist em dispositivos reais:
   - Galaxy Tab S9 FE+ (admin completo + AR)
   - um Android intermediário (AR via Scene Viewer)
