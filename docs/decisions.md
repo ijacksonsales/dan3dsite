@@ -114,3 +114,11 @@ Formato: data · decisão · motivo.
 - **Login no navegador** (`signInWithPassword` do `@supabase/ssr`), não por server action: a sessão fica em cookies persistentes e o middleware já a renova. Depois do login volta para a página pedida (`?next=`), aceitando só caminhos de `/admin` (`lib/admin/paths.ts`) para não virar redirecionamento aberto.
 - **Telas do painel no grupo `app/admin/(panel)/`**, com cabeçalho (Ver loja, Sair); o login fica fora do grupo, sem cabeçalho.
 - **Contas de admin por script** (`scripts/create-admin.mjs`, com a service role do `.dev.vars`): cria a conta já confirmada com senha provisória de 12 letras/números fáceis de digitar e insere em `admins`. Se a conta já existir, só a promove. Falta uma tela "Trocar senha" (entra junto com Configurações).
+
+## 2026-10-13 · Fase 3: categorias, arrastar e avisos
+
+- **`@dnd-kit/core@6.3.1` + `@dnd-kit/sortable@10.0.0` + `@dnd-kit/utilities@3.2.2`** (da stack do plano). A lista arrastável fica em `components/admin/sortable-list.tsx` para servir também a destaques e banners. Só a alça (⋮⋮, 48 px) inicia o arraste, então o resto da linha continua rolando a página no tablet; o teclado também funciona, com instruções em português para leitor de tela.
+- **Ordem gravada logo ao soltar**, sem botão "Salvar": só as linhas que mudaram de posição são atualizadas (`lib/admin/reorder.ts`). Se falhar, a lista volta como estava e aparece o aviso de erro.
+- **Avisos (toast) próprios** (`components/admin/toast.tsx`), sem biblioteca: uma mensagem por vez, acima da barra do rodapé; erros ficam 7 s.
+- **Excluir categoria** é permitido, com confirmação que diz quantas peças ficam sem categoria (elas continuam na loja; `on delete set null`). Categoria não tem "arquivar", diferente dos produtos.
+- **Escritas do painel verificam a linha de volta** (`.select("id")`): com RLS, um update bloqueado não dá erro, só não altera nada.

@@ -51,7 +51,7 @@ const SHORTCUTS: Shortcut[] = [
     label: "Categorias",
     description: "Nomes e ordem",
     icon: TagsIcon,
-    ready: false,
+    ready: true,
   },
   {
     href: "/admin/configuracoes",

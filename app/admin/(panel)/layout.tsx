@@ -2,13 +2,14 @@ import { StoreIcon } from "lucide-react";
 import Link from "next/link";
 
 import { LogoutButton } from "@/components/admin/logout-button";
+import { ToastProvider } from "@/components/admin/toast";
 import { BrandLogo } from "@/components/store/brand-logo";
 import { ADMIN_HOME } from "@/lib/admin/paths";
 
 /** Admin pages behind login (the middleware checks `is_admin()`). */
 export default function PanelLayout({ children }: LayoutProps<"/admin">) {
   return (
-    <>
+    <ToastProvider>
       <header className="sticky top-0 z-40 border-b border-border/60 bg-background/90 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-3xl items-center gap-2 px-4">
           <Link
@@ -32,6 +33,6 @@ export default function PanelLayout({ children }: LayoutProps<"/admin">) {
       <main className="mx-auto w-full max-w-3xl flex-1 px-4 pt-6 pb-28">
         {children}
       </main>
-    </>
+    </ToastProvider>
   );
 }
