@@ -122,3 +122,15 @@ Formato: data · decisão · motivo.
 - **Avisos (toast) próprios** (`components/admin/toast.tsx`), sem biblioteca: uma mensagem por vez, acima da barra do rodapé; erros ficam 7 s.
 - **Excluir categoria** é permitido, com confirmação que diz quantas peças ficam sem categoria (elas continuam na loja; `on delete set null`). Categoria não tem "arquivar", diferente dos produtos.
 - **Escritas do painel verificam a linha de volta** (`.select("id")`): com RLS, um update bloqueado não dá erro, só não altera nada.
+
+## 2026-10-13 · Fase 3: produtos (lista e cadastro)
+
+- **Lista** (`/admin/produtos`): filtros na URL (`?q=&status=&categoria=`, `categoria=sem` = sem categoria) para "voltar" manter a busca; ordem por data de criação (não por última alteração, senão a linha pula ao tocar na estrela). Ações rápidas: estrela (destaque, entra no fim da ordem) e interruptor "Na loja/Rascunho". Não há excluir: tirar da loja é o "arquivar".
+- **Cadastro em uma página com seções numeradas** (Fotos · Informações · Modelo 3D · Medidas · Imagem de espera), botões fixos no rodapé: "Salvar rascunho"/"Publicar" (ou "Tirar da loja"/"Salvar" se já publicado). Publicar exige ao menos uma foto.
+- **O id do produto novo nasce no servidor da página** (`crypto.randomUUID()`), para os arquivos subirem em `{product_id}/…` antes de a linha existir.
+- **Ordem do salvamento** (`lib/admin/save-product.ts`): confere o endereço → envia fotos, GLB, original e USDZ com nomes novos (timestamp) → grava a linha e as fotos → só então apaga os arquivos que nada mais usa. Uma falha no meio deixa no máximo arquivos órfãos, nunca um produto apontando para arquivo apagado.
+- **Fotos:** `browser-image-compression@2.0.2` (da stack), WebP, ≤ 2000 px, qualidade inicial 85%, teto de 1,5 MB, em Web Worker. Galeria e câmera (`capture="environment"`) como botões separados.
+- **USDZ (iPhone) gerado no salvamento**, com o `USDZExporter` do three a partir do GLB (`lib/model-converter/usdz.ts`, import dinâmico). Segue o que o model-viewer faz na hora e que já foi medido certo no iPhone: âncora horizontal no chão; **sem âncora** na parede (corrige a nota de 2026-10-10, que previa âncora vertical). Se falhar, salva sem USDZ e o model-viewer volta a gerar na hora. A coluna `model_usdz_path` vem da migration `20261013120000_product_usdz.sql`; a loja passa o arquivo em `ios-src`.
+- **Trocar chão ↔ parede** reconverte: do arquivo aberto, ou baixando o original guardado (`model_source_path`). Sem original guardado, pede o arquivo de novo.
+- **Imagem de espera (poster):** foto do 3D tirada da prévia (`toBlob`, WebP) ou a foto de capa. A prévia do admin carrega com `loading="eager"` para a foto sair mesmo fora da tela; se não estiver pronta, usa a capa.
+- **Rascunho local:** só os campos de texto, a escolha chão/parede e as medidas ficam no `localStorage` (fotos e modelo, não: são grandes). Ao voltar, a tela oferece recuperar. Aviso do navegador ao sair com alterações não salvas.

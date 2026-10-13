@@ -53,6 +53,7 @@ export type Database = {
           depth_mm: number | null;
           model_path: string | null;
           model_source_path: string | null;
+          model_usdz_path: string | null;
           poster_path: string | null;
           ar_placement: ArPlacement;
           status: ProductStatus;
@@ -74,6 +75,7 @@ export type Database = {
           depth_mm?: number | null;
           model_path?: string | null;
           model_source_path?: string | null;
+          model_usdz_path?: string | null;
           poster_path?: string | null;
           ar_placement?: ArPlacement;
           status?: ProductStatus;

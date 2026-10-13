@@ -30,7 +30,7 @@ const SHORTCUTS: Shortcut[] = [
     label: "Produtos",
     description: "Ver, editar, publicar",
     icon: PackageIcon,
-    ready: false,
+    ready: true,
   },
   {
     href: "/admin/destaques",
@@ -81,7 +81,7 @@ export default async function AdminHomePage() {
           label: "Novo produto",
           description: "Fotos, modelo 3D e preço",
           icon: PlusIcon,
-          ready: false,
+          ready: true,
         }}
         primary
       />

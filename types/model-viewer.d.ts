@@ -12,6 +12,7 @@ type ModelViewerAttributes = DetailedHTMLProps<
   loading?: "auto" | "lazy" | "eager";
   reveal?: "auto" | "manual";
   ar?: boolean;
+  "ios-src"?: string;
   "ar-modes"?: string;
   "ar-scale"?: "auto" | "fixed";
   "ar-placement"?: "floor" | "wall";

@@ -48,6 +48,7 @@ export function ProductViewer({
   productId,
   name,
   modelSrc,
+  iosSrc,
   posterSrc,
   placement,
   pageUrl,
@@ -55,6 +56,7 @@ export function ProductViewer({
   productId: string;
   name: string;
   modelSrc: string;
+  iosSrc?: string;
   posterSrc?: string;
   placement: ArPlacement;
   pageUrl: string;
@@ -113,6 +115,7 @@ export function ProductViewer({
         {nearViewport && (
           <ModelViewer
             src={modelSrc}
+            iosSrc={iosSrc}
             alt={`Modelo 3D de ${name}`}
             poster={posterSrc}
             placement={placement}

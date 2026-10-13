@@ -136,7 +136,7 @@ export const getProductBySlug = cache(async (slug: string) => {
   const { data } = await supabase
     .from("products")
     .select(
-      "id, name, slug, description, price_cents, height_mm, width_mm, depth_mm, model_path, poster_path, ar_placement, made_to_order, categories(name, slug), product_images(path, alt, sort_order)",
+      "id, name, slug, description, price_cents, height_mm, width_mm, depth_mm, model_path, model_usdz_path, poster_path, ar_placement, made_to_order, categories(name, slug), product_images(path, alt, sort_order)",
     )
     .eq("status", "published")
     .eq("slug", slug)

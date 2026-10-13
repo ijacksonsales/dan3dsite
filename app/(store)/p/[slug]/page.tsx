@@ -163,6 +163,11 @@ export default async function ProductPage({ params }: PageProps<"/p/[slug]">) {
                 productId={product.id}
                 name={product.name}
                 modelSrc={publicUrl("models", product.model_path)}
+                iosSrc={
+                  product.model_usdz_path
+                    ? publicUrl("models", product.model_usdz_path)
+                    : undefined
+                }
                 posterSrc={
                   product.poster_path
                     ? publicUrl("images", product.poster_path)

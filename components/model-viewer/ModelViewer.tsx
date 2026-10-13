@@ -26,8 +26,12 @@ function loadModelViewer() {
 
 export interface ModelViewerProps {
   src: string;
+  /** Pre-built USDZ for iPhone Quick Look; without it model-viewer converts on tap. */
+  iosSrc?: string;
   alt: string;
   poster?: string;
+  /** "eager" loads even off-screen (admin preview, for the poster snapshot). */
+  loading?: "lazy" | "eager";
   placement?: ArPlacement;
   /** Text of the AR button. */
   arLabel?: string;
@@ -48,8 +52,10 @@ export interface ModelViewerProps {
  */
 export function ModelViewer({
   src,
+  iosSrc,
   alt,
   poster,
+  loading = "lazy",
   placement = "floor",
   arLabel = "Ver no meu espaço",
   className,
@@ -101,9 +107,10 @@ export function ModelViewer({
         else if (ref) ref.current = element;
       }}
       src={ready ? src : undefined}
+      ios-src={iosSrc}
       alt={alt}
       poster={poster}
-      loading="lazy"
+      loading={loading}
       camera-controls
       touch-action="pan-y"
       shadow-intensity="1"
