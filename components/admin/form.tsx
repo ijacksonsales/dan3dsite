@@ -45,6 +45,26 @@ export function TextInput({ className, ...props }: ComponentProps<"input">) {
   return <input className={cn(inputClassName, className)} {...props} />;
 }
 
+export function TextArea({ className, ...props }: ComponentProps<"textarea">) {
+  return (
+    <textarea
+      className={cn(inputClassName, "min-h-32 py-3 leading-relaxed", className)}
+      {...props}
+    />
+  );
+}
+
+/** Bottom bar for the main action, always within thumb reach on a tablet. */
+export function StickyActions({ children }: { children: ReactNode }) {
+  return (
+    <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border/60 bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md">
+      <div className="mx-auto flex max-w-3xl flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:gap-3">
+        {children}
+      </div>
+    </div>
+  );
+}
+
 export function Alert({
   tone = "error",
   children,

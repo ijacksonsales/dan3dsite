@@ -58,7 +58,7 @@ const SHORTCUTS: Shortcut[] = [
     label: "Configurações",
     description: "WhatsApp, Instagram, sobre",
     icon: SettingsIcon,
-    ready: false,
+    ready: true,
   },
 ];
 

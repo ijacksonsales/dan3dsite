@@ -256,7 +256,7 @@ Mobile-first. Desempenho alvo: Lighthouse mobile ≥ 90 em Performance nas pági
 - [ ] **Destaques:** lista dos produtos destacados, reordenáveis com `@dnd-kit` (toque), e botão para adicionar a partir da lista de produtos.
 - [ ] **Banners:** CRUD com upload de imagem desktop e mobile, título e subtítulo opcionais, link (seletor de produto/categoria ou URL), período de exibição, ativo/inativo, ordem arrastável. Prévia de como fica no celular.
 - [ ] **Categorias:** CRUD + ordem arrastável.
-- [ ] **Configurações:** nome da loja, número de WhatsApp (com validação e botão "testar"), Instagram, texto "sobre".
+- [x] **Configurações:** nome da loja, número de WhatsApp (com validação e botão "testar"), Instagram, texto "sobre". — _também "Trocar senha" (2026-10-13)_
 - [ ] **Imagens:** comprimir no cliente antes do upload (WebP, máx. 2000 px no lado maior, ~85% de qualidade).
 
 **Pronto quando:** a dona do negócio, sozinha no tablet e sem instruções além de uma conversa curta, cadastra um produto completo com 3D e AR, cria um banner e reordena os destaques.
