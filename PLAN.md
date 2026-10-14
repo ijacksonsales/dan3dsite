@@ -253,11 +253,11 @@ Mobile-first. Desempenho alvo: Lighthouse mobile ≥ 90 em Performance nas pági
   5. Poster: gerado automaticamente via `toDataURL()` do model-viewer, com opção de usar a capa
   6. **USDZ para iPhone:** gerado no navegador junto com o GLB (`USDZExporter` do three, com âncora horizontal ou vertical conforme o tipo de exibição) e salvo no bucket `models`; exige a coluna `model_usdz_path` (nova migration). Tira a espera da geração na hora em que o cliente toca em "Ver no meu espaço".
   7. Salvar como rascunho ou publicar
-- [ ] **Destaques:** lista dos produtos destacados, reordenáveis com `@dnd-kit` (toque), e botão para adicionar a partir da lista de produtos.
-- [ ] **Banners:** CRUD com upload de imagem desktop e mobile, título e subtítulo opcionais, link (seletor de produto/categoria ou URL), período de exibição, ativo/inativo, ordem arrastável. Prévia de como fica no celular.
+- [x] **Destaques:** — _testado em 2026-10-14_ lista dos produtos destacados, reordenáveis com `@dnd-kit` (toque), e botão para adicionar a partir da lista de produtos.
+- [x] **Banners:** — _testado em 2026-10-14_ CRUD com upload de imagem desktop e mobile, título e subtítulo opcionais, link (seletor de produto/categoria ou URL), período de exibição, ativo/inativo, ordem arrastável. Prévia de como fica no celular.
 - [x] **Categorias:** CRUD + ordem arrastável. — _2026-10-13_
 - [x] **Configurações:** nome da loja, número de WhatsApp (com validação e botão "testar"), Instagram, texto "sobre". — _também "Trocar senha" (2026-10-13)_
-- [ ] **Imagens:** comprimir no cliente antes do upload (WebP, máx. 2000 px no lado maior, ~85% de qualidade).
+- [x] **Imagens:** comprimir no cliente antes do upload (WebP, máx. 2000 px no lado maior, ~85% de qualidade). — _`lib/images/compress.ts`, usado em produtos e banners_
 
 **Pronto quando:** a dona do negócio, sozinha no tablet e sem instruções além de uma conversa curta, cadastra um produto completo com 3D e AR, cria um banner e reordena os destaques.
 

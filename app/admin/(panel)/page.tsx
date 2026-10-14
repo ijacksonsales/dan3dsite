@@ -37,14 +37,14 @@ const SHORTCUTS: Shortcut[] = [
     label: "Destaques",
     description: "Peças da página inicial",
     icon: StarIcon,
-    ready: false,
+    ready: true,
   },
   {
     href: "/admin/banners",
     label: "Banners",
     description: "Imagens do topo da loja",
     icon: ImagesIcon,
-    ready: false,
+    ready: true,
   },
   {
     href: "/admin/categorias",

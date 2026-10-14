@@ -66,11 +66,17 @@ export const getCategories = cache(async () => {
 
 export async function getActiveBanners() {
   const supabase = await createClient();
+  // Same rule as the public RLS policy, repeated here: a logged-in admin
+  // browsing the store would otherwise see switched-off and scheduled banners.
+  const now = new Date().toISOString();
   const { data } = await supabase
     .from("banners")
     .select(
       "id, title, subtitle, image_desktop_path, image_mobile_path, link_url",
     )
+    .eq("active", true)
+    .or(`starts_at.is.null,starts_at.lte.${now}`)
+    .or(`ends_at.is.null,ends_at.gt.${now}`)
     .order("sort_order");
   return data ?? [];
 }
