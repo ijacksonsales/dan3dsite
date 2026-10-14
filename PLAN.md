@@ -244,8 +244,8 @@ Mobile-first. Desempenho alvo: Lighthouse mobile ≥ 90 em Performance nas pági
 
 - [x] **Login:** e-mail + senha (magic link é ruim no tablet, porque abre em outro navegador), sessão persistente. Middleware protege `/admin/*` e verifica `is_admin()`. — _feito e testado (2026-10-13)_
 - [x] **Início do admin:** atalhos grandes (Novo produto · Produtos · Destaques · Banners · Categorias · Configurações) + contagem de rascunhos. — _feito; atalhos das telas ainda não prontas aparecem como "Em breve"_
-- [x] **Produtos:** lista com busca, filtro por categoria e status, miniatura; ações rápidas (publicar/despublicar, destacar). — _2026-10-13; falta testar_
-- [ ] **Novo/editar produto:** — _feito em 2026-10-13, falta testar no tablet (e aplicar a migration do USDZ)_
+- [x] **Produtos:** lista com busca, filtro por categoria e status, miniatura; ações rápidas (publicar/despublicar, destacar). — _testado em 2026-10-14_
+- [x] **Novo/editar produto:** — _testado no tablet e no iPhone pelo IP local (2026-10-14); migration do USDZ aplicada_
   1. Fotos (várias, reordenar arrastando, a primeira é a capa)
   2. Nome (slug gerado automaticamente, editável), categoria, descrição, preço (opcional)
   3. **Modelo 3D:** escolher STL/3MF → conversor da fase 1 com progresso → exibe **"Altura detectada: 15,2 cm · Largura: 8,0 cm — confere com a peça?"**, com opção de corrigir a altura real (reescala uniforme) → visualizador 3D de prévia → botão **"Testar no meu espaço"** (AR no próprio tablet) antes de salvar
