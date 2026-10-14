@@ -185,6 +185,15 @@ export type Database = {
     Views: { [_ in never]: never };
     Functions: {
       is_admin: { Args: Record<PropertyKey, never>; Returns: boolean };
+      event_summary: {
+        Args: { since: string };
+        Returns: {
+          product_id: string | null;
+          product_views: number;
+          ar_opens: number;
+          whatsapp_clicks: number;
+        }[];
+      };
     };
     Enums: {
       ar_placement: ArPlacement;

@@ -1,4 +1,5 @@
 import {
+  ChartColumnIcon,
   ImagesIcon,
   PackageIcon,
   PlusIcon,
@@ -51,6 +52,13 @@ const SHORTCUTS: Shortcut[] = [
     label: "Categorias",
     description: "Nomes e ordem",
     icon: TagsIcon,
+    ready: true,
+  },
+  {
+    href: "/admin/metricas",
+    label: "Números da loja",
+    description: "Visitas, AR e WhatsApp (30 dias)",
+    icon: ChartColumnIcon,
     ready: true,
   },
   {

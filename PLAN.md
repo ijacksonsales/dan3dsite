@@ -273,7 +273,7 @@ Mobile-first. Desempenho alvo: Lighthouse mobile ≥ 90 em Performance nas pági
 - [ ] Teste de escala com 3 peças reais de tamanhos diferentes (fita métrica vs AR)
 - [x] Páginas de erro (404/500) amigáveis — _loja, painel e `global-error` (2026-10-14)_
 - [ ] Cloudflare Web Analytics (gratuito) para visitas gerais
-- [ ] No admin, um painel simples a partir da tabela `events`: peças mais vistas, aberturas de AR e cliques no WhatsApp nos últimos 30 dias
+- [ ] No admin, um painel simples a partir da tabela `events`: peças mais vistas, aberturas de AR e cliques no WhatsApp nos últimos 30 dias — _`/admin/metricas` (2026-10-14); falta aplicar a migration `event_summary` e testar_
 - [x] Ping agendado para o Supabase não pausar (ver armadilhas) — _`.github/workflows/supabase-ping.yml`, rodando a cada 2 dias com sucesso_
 
 ### Fase 5 — Futuro (não implementar agora)
