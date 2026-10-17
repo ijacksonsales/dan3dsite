@@ -1,6 +1,7 @@
 type Parsed<T> = { ok: true; value: T } | { ok: false; error: string };
 
-const decimal = (text: string) =>
+/** "1.250,5", "R$ 89", "89.9" → number (NaN when it is not a number). */
+export const decimal = (text: string) =>
   Number(
     text
       .trim()

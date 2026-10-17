@@ -1,7 +1,8 @@
 "use client";
 
 import type { ModelViewerElement } from "@google/model-viewer";
-import { LoaderCircleIcon } from "lucide-react";
+import { CalculatorIcon, LoaderCircleIcon } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   useCallback,
@@ -470,6 +471,15 @@ export function ProductForm({
             placeholder="89,90"
             aria-invalid={showErrors && !!errors.price}
           />
+          {!isNew && (
+            <Link
+              href={`/admin/calculadora?produto=${id}`}
+              className="inline-flex min-h-12 items-center gap-2 rounded-full text-base font-medium text-primary underline-offset-4 hover:underline"
+            >
+              <CalculatorIcon className="size-5" />
+              Calcular preço
+            </Link>
+          )}
         </Field>
 
         <label className="flex min-h-12 cursor-pointer items-center gap-3 text-base">

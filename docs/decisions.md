@@ -149,3 +149,52 @@ Formato: data · decisão · motivo.
 - **Páginas de erro:** "não encontrado" da loja com cabeçalho e rodapé (peça, categoria e endereços inexistentes), erro da loja com "Tentar de novo", versões do painel com volta ao início e `global-error` para falha no layout raiz.
 - **Ping do Supabase:** já existia desde a fase 0 e roda a cada 2 dias com sucesso; só marcado no plano.
 - **Cloudflare Web Analytics com o snippet no código** (`components/store/web-analytics.tsx`): a injeção automática da Cloudflare não vale para respostas de Worker. O script entra só nas páginas da loja (as visitas da dona ao painel não contam), só em produção e com `strategy="lazyOnload"`, para não disputar com a imagem principal (LCP). O token é público por natureza.
+
+## 2026-10-14 · Gestão do negócio no painel (fases 6 a 10)
+
+- **Decisão:** ampliar o escopo com calculadora de custos, clientes e pedidos, financeiro, conversor de imagem para SVG e imagens com o Gemini, nessa ordem (pedidos usam a calculadora; o financeiro usa os pedidos). Fases e critérios em `PLAN.md`.
+- **Motivo:** a dona usa planilhas e outros aplicativos para isso; no tablet, trocar de app a toda hora atrapalha.
+- **Fórmula de preço:** materiais extras e embalagem são **repasse**: entram no preço pelo custo, sem margem. `preço = (impressão + falhas + acabamento) × (1 + margem) + extras + embalagem`, final ,90. A planilha antiga (`docs/Calculadora_Custos_DAN3D.xlsx`) chegava ao mesmo preço com margem de 100% por coincidência, mas mostrava um lucro maior que o real.
+- **Dados de custo e finanças só para admin**, em tabelas próprias com RLS também no `select`. `settings` e `products` têm leitura pública e não podem guardar custos.
+- **Pedidos guardam uma foto do cálculo** (preço, custo e repasse por item), para que mudar parâmetros depois não altere pedidos antigos.
+- **Lucro do mês pelo regime de caixa** (recebido − contas pagas). A margem estimada dos pedidos aparece separada, para não contar o filamento duas vezes (ele já entra nas contas pagas).
+- **"Mini Inkscape" fora:** vira só ajustes no conversor SVG (cores, suavização, fundo, apagar cor). Um editor completo daria muito trabalho para pouco uso.
+- **Gemini:** há indícios de que a API deixou de ter cota gratuita para imagens em dez/2025; confirmar com a chave antes de construir a fase 10.
+
+## 2026-10-14 · Fase 6: calculadora de custos
+
+- **Percentuais guardados como percentual** (`failure_percent = 10`, `margin_percent = 100`), não como fração: é como a dona digita e lê.
+- **Preço do filamento por peça:** a calculadora começa com o preço padrão, mas aceita outro só naquele cálculo (filamento seda, PETG etc.). Fica `null` no cálculo salvo quando é o padrão, para acompanhar mudanças no preço padrão.
+- **Materiais iniciais vieram da aba Materiais da planilha.** A quantidade do "Suporte de chaveiro" estava 160 (provável erro de digitação) e entrou como 1.
+- **Cálculo salvo na peça guarda só as entradas** (peso, tempo, acabamento, materiais), não o resultado: mudar a margem ou a energia atualiza o preço sugerido da próxima vez. Os pedidos (fase 7) é que vão guardar a foto do resultado.
+- **Salvar na peça não muda o preço da loja sozinho:** depois de salvar, uma janela pergunta se a dona quer usar o preço sugerido.
+- **Atalhos do painel agrupados** em "Loja" e "Gestão" ("Ferramentas" entra na fase 9).
+
+## 2026-10-16 · Fase 7: clientes e pedidos
+
+- **Pedido e itens salvos por uma função no banco** (`save_order`, `security invoker`): cria ou atualiza o pedido e troca os itens numa transação só, para uma queda de internet no meio não deixar pedido sem peças. O RLS continua valendo.
+- **Situações:** Orçamento → Confirmado → Em produção → Pronto → Entregue, mais Cancelado. A tela mostra um botão grande com o próximo passo; "Voltar para…" corrige enganos. Pedidos entregues ou cancelados não editam peças (reabrir primeiro).
+- **Item do catálogo:** preço da loja; custo do cálculo salvo na peça (fase 6), com os parâmetros de hoje. Sem cálculo salvo, o custo fica em branco e o lucro do pedido aparece como "—" até calcular.
+- **Lucro estimado do pedido** = peças − desconto − custo. O frete fica de fora (vai para a transportadora).
+- **Pagamentos** em tabela própria (sinal, restante, várias formas). Pedido com pagamento não pode ser excluído, só cancelado, para não sumir dinheiro recebido do financeiro.
+- **Cliente com pedidos não pode ser excluído** (`on delete restrict`).
+- **"Usar num pedido"** leva o cálculo da calculadora por `sessionStorage` (só precisa sobreviver a uma navegação na mesma aba).
+- **Numeração:** `orders.number` é `identity`. Os testes consumiram números; a sequência foi reiniciada com a tabela vazia, para o primeiro pedido real ser o nº 1.
+
+## 2026-10-16 · Fase 8: financeiro
+
+- **Resumos calculados no banco** (`finance_months`, `finance_open`, `finance_top_items`, todas `security invoker`) em vez de um `finance_summary` único: cada bloco da tela tem uma pergunta diferente (por mês, agora, ranking) e a soma no navegador pararia nas 1.000 linhas do PostgREST.
+- **Regime de caixa no "Resultado":** recebido (pagamentos de pedidos pela data do pagamento) − contas pagas (pela data em que foram pagas). A "margem estimada" dos pedidos entregues aparece à parte, como estimativa da calculadora, para não contar o filamento duas vezes.
+- **Mês do pedido entregue** pela data de entrega no horário de Brasília (`delivered_at at time zone 'America/Sao_Paulo'`).
+- **A receber** inclui pedidos confirmados, em produção, prontos e entregues com saldo; orçamentos e cancelados ficam de fora.
+- **Conta de todo mês:** ao pagar pela primeira vez, `pay_expense` lança a do mês seguinte na mesma transação; pagar de novo não duplica. "Já está paga" no cadastro passa pela mesma função.
+- **Gráfico sem biblioteca nova:** barras em HTML/CSS (recebido × contas pagas, 6 meses), tocar no mês mostra os valores (tablet não tem hover) e há "Ver em tabela". Cores: slots 1 e 2 da paleta de referência do skill de visualização (azul/laranja), validadas no fundo claro e escuro do painel; a escala marrom da marca é de um tom só e não separa duas séries.
+
+## 2026-10-16 · Fase 9: imagem para SVG
+
+- **Biblioteca `imagetracerjs` 1.2.6** (Unlicense, JS puro, várias cores), aprovada pelo dono do projeto. Sem tipos no npm: declarados só os usados em `types/imagetracerjs.d.ts`.
+- **Só no cliente:** o traçado roda num Web Worker (`lib/vectorize/worker.ts`) e a tela é carregada com `dynamic(..., { ssr: false })`. Sem isso a biblioteca entrava no bundle do Worker da Cloudflare (conferido no `.open-next`).
+- **Imagens grandes são reduzidas para 1000 px** no lado maior antes do traçado: o tempo cresce com a área e logos não precisam de mais.
+- **SVG pensado para o Bambu Studio:** só preenchimentos, sem contorno (`stroke`), com `viewBox` e largura/altura. O fundo é a cor mais comum na borda da imagem; áreas transparentes do PNG já ficam de fora.
+- **Esconder cores não refaz o traçado:** o SVG é remontado na hora a partir do resultado guardado. Mudar nº de cores, suavização ou manchas refaz o traçado (com uma pausa de 350 ms para não refazer a cada toque).
+- **Prévia como imagem** (`<img src="data:image/svg+xml…">`), nunca inserida como HTML na página.

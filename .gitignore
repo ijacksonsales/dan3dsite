@@ -57,3 +57,5 @@ supabase/.branches
 /fixtures
 
 certificates
+# Business spreadsheets (real values, kept out of git)
+docs/*.xlsx

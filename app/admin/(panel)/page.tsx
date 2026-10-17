@@ -1,16 +1,22 @@
 import {
+  CalculatorIcon,
   ChartColumnIcon,
+  ClipboardListIcon,
   ImagesIcon,
+  PenToolIcon,
   PackageIcon,
   PlusIcon,
   SettingsIcon,
   StarIcon,
   TagsIcon,
+  UsersIcon,
+  WalletIcon,
   type LucideIcon,
 } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { addDays, storeToday } from "@/lib/dates";
 import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
 
@@ -25,7 +31,7 @@ interface Shortcut {
   ready: boolean;
 }
 
-const SHORTCUTS: Shortcut[] = [
+const STORE_SHORTCUTS: Shortcut[] = [
   {
     href: "/admin/produtos",
     label: "Produtos",
@@ -70,12 +76,67 @@ const SHORTCUTS: Shortcut[] = [
   },
 ];
 
+const BUSINESS_SHORTCUTS: Shortcut[] = [
+  {
+    href: "/admin/pedidos",
+    label: "Pedidos",
+    description: "Orçamentos, produção e pagamentos",
+    icon: ClipboardListIcon,
+    ready: true,
+  },
+  {
+    href: "/admin/clientes",
+    label: "Clientes",
+    description: "Contatos e histórico",
+    icon: UsersIcon,
+    ready: true,
+  },
+  {
+    href: "/admin/financeiro",
+    label: "Financeiro",
+    description: "Recebido, contas e lucro do mês",
+    icon: WalletIcon,
+    ready: true,
+  },
+  {
+    href: "/admin/calculadora",
+    label: "Calculadora de preço",
+    description: "Custo, lucro e preço sugerido",
+    icon: CalculatorIcon,
+    ready: true,
+  },
+];
+
+const TOOL_SHORTCUTS: Shortcut[] = [
+  {
+    href: "/admin/ferramentas/svg",
+    label: "Imagem para SVG",
+    description: "Logo ou desenho para o Bambu Studio",
+    icon: PenToolIcon,
+    ready: true,
+  },
+];
+
+const GROUPS: { title: string; shortcuts: Shortcut[] }[] = [
+  { title: "Loja", shortcuts: STORE_SHORTCUTS },
+  { title: "Gestão", shortcuts: BUSINESS_SHORTCUTS },
+  { title: "Ferramentas", shortcuts: TOOL_SHORTCUTS },
+];
+
 export default async function AdminHomePage() {
   const supabase = await createClient();
-  const { count: drafts } = await supabase
-    .from("products")
-    .select("id", { count: "exact", head: true })
-    .eq("status", "draft");
+  const [{ count: drafts }, { count: dueSoon }] = await Promise.all([
+    supabase
+      .from("products")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "draft"),
+    // Orders being made that are late or due within 3 days.
+    supabase
+      .from("orders")
+      .select("id", { count: "exact", head: true })
+      .in("status", ["confirmed", "in_production", "ready"])
+      .lte("due_date", addDays(storeToday(), 3)),
+  ]);
 
   return (
     <div className="space-y-6">
@@ -94,6 +155,21 @@ export default async function AdminHomePage() {
         primary
       />
 
+      {dueSoon ? (
+        <Link
+          href="/admin/pedidos"
+          className="flex min-h-12 items-center rounded-xl bg-amber-100 px-4 py-3 text-base text-amber-950 hover:bg-amber-200 dark:bg-amber-950 dark:text-amber-100"
+        >
+          <span>
+            <strong>{dueSoon}</strong>{" "}
+            {dueSoon === 1
+              ? "pedido atrasado ou com entrega nos próximos 3 dias"
+              : "pedidos atrasados ou com entrega nos próximos 3 dias"}
+            . Ver pedidos →
+          </span>
+        </Link>
+      ) : null}
+
       {drafts ? (
         <p className="rounded-xl bg-secondary px-4 py-3 text-base">
           Você tem <strong>{drafts}</strong>{" "}
@@ -104,13 +180,18 @@ export default async function AdminHomePage() {
         </p>
       ) : null}
 
-      <ul className="grid gap-3 sm:grid-cols-2">
-        {SHORTCUTS.map((shortcut) => (
-          <li key={shortcut.href}>
-            <ShortcutCard shortcut={shortcut} />
-          </li>
-        ))}
-      </ul>
+      {GROUPS.map((group) => (
+        <section key={group.title} className="space-y-3">
+          <h2 className="font-heading text-xl font-medium">{group.title}</h2>
+          <ul className="grid gap-3 sm:grid-cols-2">
+            {group.shortcuts.map((shortcut) => (
+              <li key={shortcut.href}>
+                <ShortcutCard shortcut={shortcut} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
     </div>
   );
 }

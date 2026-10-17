@@ -13,7 +13,9 @@ Um site-catálogo para um negócio de impressão 3D (nichos religioso e infantil
 
 **Público do admin:** uma pessoa não técnica, no tablet, muitas vezes com uma mão ocupada. A UX do admin tem a mesma prioridade da vitrine.
 
-**Fora do escopo (por enquanto):** checkout ou pagamento online, estoque, múltiplos usuários admin com papéis diferentes, cores pintadas com o pincel da Bambu (ver fase 5).
+**Gestão do negócio no painel (fases 6 a 10, a partir de 2026-10-14):** calculadora de custos, clientes e pedidos, financeiro, conversor de imagem para SVG e geração de imagens com o Gemini, para a dona não precisar de planilhas nem de outros aplicativos.
+
+**Fora do escopo (por enquanto):** checkout ou pagamento online, estoque, múltiplos usuários admin com papéis diferentes, cores pintadas com o pincel da Bambu (ver fase 5), editor de imagens completo (tipo Inkscape).
 
 ---
 
@@ -273,7 +275,7 @@ Mobile-first. Desempenho alvo: Lighthouse mobile ≥ 90 em Performance nas pági
 - [ ] Teste de escala com 3 peças reais de tamanhos diferentes (fita métrica vs AR)
 - [x] Páginas de erro (404/500) amigáveis — _loja, painel e `global-error` (2026-10-14)_
 - [ ] Cloudflare Web Analytics (gratuito) para visitas gerais — _site criado no painel e snippet no layout da loja (2026-10-14); falta conferir os dados depois do deploy_
-- [ ] No admin, um painel simples a partir da tabela `events`: peças mais vistas, aberturas de AR e cliques no WhatsApp nos últimos 30 dias — _`/admin/metricas` (2026-10-14); falta aplicar a migration `event_summary` e testar_
+- [ ] No admin, um painel simples a partir da tabela `events`: peças mais vistas, aberturas de AR e cliques no WhatsApp nos últimos 30 dias — _`/admin/metricas` (2026-10-14); migration `event_summary` aplicada e conferida no banco (contagens batem, visitante bloqueado); falta abrir a tela logado no admin_
 - [x] Ping agendado para o Supabase não pausar (ver armadilhas) — _`.github/workflows/supabase-ping.yml`, rodando a cada 2 dias com sucesso_
 
 ### Fase 5 — Futuro (não implementar agora)
@@ -282,6 +284,50 @@ Mobile-first. Desempenho alvo: Lighthouse mobile ≥ 90 em Performance nas pági
 - Domínio próprio da marca
 - Páginas de série/coleção (ex.: presépio anual) e certificado de autenticidade com link via NFC/QR na embalagem
 - Catálogo em PDF gerado automaticamente para enviar no WhatsApp
+
+> As fases 6 a 10 vêm depois da fase 4 e não dependem da fase 5. Regras comuns: tabelas novas só para admin (RLS com `is_admin()` também no `select`; custos e finanças **nunca** em `settings`, que é público), valores em centavos e telas no padrão do painel (uma coluna, toque ≥ 48 px, ação principal no rodapé).
+
+### Fase 6 — Calculadora de custos (substitui `docs/Calculadora_Custos_DAN3D.xlsx`)
+
+- [x] Migration: `cost_settings` (linha única com os parâmetros da planilha), `materials` (itens da aba Materiais, categoria extra/embalagem) e `product_costs` (entradas de custo por produto, fora de `products` porque ele é público) — _`20261014130000_costs.sql`, aplicada em 2026-10-14; visitante não lê nem grava_
+- [x] `lib/costs/calculate.ts` + testes. Fórmula: `base = impressão + falhas + acabamento`; `lucro = base × margem`; `preço = base + lucro + extras + embalagem` (extras e embalagem são **repasse**, sem margem), arredondado para cima com final ,90 — _o exemplo da planilha dá R$ 31,90 (teste)_
+- [x] `/admin/calculadora`: peso, tempo, acabamento e materiais; preço sugerido fixo no rodapé; "Salvar no produto"
+- [x] `/admin/calculadora/ajustes`: parâmetros e lista de materiais
+- [x] Atalho "Calcular preço" no formulário do produto
+
+**Pronto quando:** o exemplo da planilha dá R$ 31,90 no tablet e a dona salva o custo de um produto real. — _no PC (2026-10-14): R$ 31,90 e salvar na peça ok; falta a dona no tablet_
+
+### Fase 7 — Clientes e pedidos
+
+- [x] Migration: `customers`, `orders` (número, status orçamento → confirmado → produzindo → pronto → entregue / cancelado, prazo, desconto, frete), `order_items` (foto do cálculo: preço, custo e repasse por unidade) e `order_payments` (sinal e restante) — _`20261016120000_orders.sql`, com `save_order()` (pedido + itens numa transação); visitante não lê nem chama_
+- [x] `lib/orders/totals.ts` e `lib/orders/message.ts` + testes
+- [x] `/admin/pedidos`, `/admin/pedidos/novo` (cliente → itens do catálogo ou avulsos com a calculadora → prazo e frete) e `/admin/pedidos/[id]` (status, pagamentos, "Enviar pelo WhatsApp")
+- [x] `/admin/clientes` e `/admin/clientes/[id]` com o histórico
+
+**Pronto quando:** a dona cria um orçamento com uma peça do catálogo e uma avulsa, manda pelo WhatsApp, registra o sinal e leva o pedido até "entregue". — _no PC (2026-10-16): orçamento com peça do catálogo e avulsa, aprovação, sinal e mensagem do WhatsApp ok; falta a dona no tablet_
+
+### Fase 8 — Financeiro
+
+- [x] Migration: `expenses` (contas a pagar, com repetição mensal) e funções de resumo — _`20261016130000_finance.sql`: `pay_expense`, `finance_months`, `finance_open`, `finance_top_items` no lugar de um único `finance_summary`; visitante não lê nem chama_
+- [x] `/admin/financeiro`: recebido, contas pagas e lucro do mês (caixa), margem estimada dos pedidos entregues, a receber, a pagar, gráfico de 6 meses (sem biblioteca nova) e peças mais vendidas
+- [x] `/admin/financeiro/contas`: cadastro e botão "Paguei"
+
+**Pronto quando:** com pedidos e contas de teste, os números do mês batem com a conta feita à mão. — _no banco e na tela (2026-10-16), com dados de teste apagados depois; falta a dona no tablet_
+
+### Fase 9 — Imagem → SVG
+
+- [x] `lib/vectorize/` em Web Worker, só no cliente — _`imagetracerjs` 1.2.6 (Unlicense), fora do bundle do Worker_
+- [x] `/admin/ferramentas/svg`: nº de cores, suavização, ignorar manchas, remover fundo, tocar para apagar uma cor, prévia e baixar/compartilhar
+
+**Pronto quando:** um logo em PNG vira um SVG limpo no tablet e abre no Bambu Studio. — _no PC (2026-10-16) com as imagens de exemplo da biblioteca; falta um logo real no tablet e abrir no Bambu Studio_
+
+### Fase 10 — Imagens com o Gemini
+
+- [ ] Confirmar se a chave tem cota gratuita para imagens (há indícios de que acabou em dez/2025); sem cota, decidir entre faturamento e não fazer
+- [ ] `GEMINI_API_KEY` como secret; rota que confere `is_admin()` e repassa a resposta sem processar (pouca CPU no Worker)
+- [ ] `/admin/ferramentas/imagens`: descrição + foto de referência; salvar, usar como banner/no produto ou mandar para o SVG
+
+**Pronto quando:** a dona gera uma imagem a partir de uma descrição e a usa num banner sem sair do painel.
 
 ---
 

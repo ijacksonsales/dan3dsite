@@ -19,6 +19,12 @@ type Table<Row, Insert, Relationships = []> = {
 export type ArPlacement = "floor" | "wall";
 export type ProductStatus = "draft" | "published";
 export type EventType = "product_view" | "ar_open" | "whatsapp_click";
+export type MaterialCategory = "extra" | "packaging";
+export type OrderStatus =
+  "quote" | "confirmed" | "in_production" | "ready" | "delivered" | "canceled";
+export type PaymentMethod = "pix" | "cash" | "card" | "other";
+export type ExpenseCategory =
+  "filament" | "materials" | "packaging" | "energy" | "machine" | "other";
 
 export type Database = {
   public: {
@@ -181,6 +187,218 @@ export type Database = {
           about_text?: string | null;
         }
       >;
+      cost_settings: Table<
+        {
+          id: number;
+          filament_price_per_kg_cents: number;
+          energy_price_per_kwh_cents: number;
+          printer_power_w: number;
+          machine_price_cents: number;
+          machine_life_hours: number;
+          maintenance_cents: number;
+          failure_percent: number;
+          labor_rate_per_hour_cents: number;
+          margin_percent: number;
+          updated_at: string | null;
+        },
+        {
+          id?: number;
+          filament_price_per_kg_cents?: number;
+          energy_price_per_kwh_cents?: number;
+          printer_power_w?: number;
+          machine_price_cents?: number;
+          machine_life_hours?: number;
+          maintenance_cents?: number;
+          failure_percent?: number;
+          labor_rate_per_hour_cents?: number;
+          margin_percent?: number;
+          updated_at?: string | null;
+        }
+      >;
+      materials: Table<
+        {
+          id: string;
+          name: string;
+          pack_units: number;
+          pack_price_cents: number;
+          category: MaterialCategory;
+          default_quantity: number;
+          used_by_default: boolean;
+          sort_order: number;
+          created_at: string | null;
+        },
+        {
+          id?: string;
+          name: string;
+          pack_units: number;
+          pack_price_cents: number;
+          category: MaterialCategory;
+          default_quantity?: number;
+          used_by_default?: boolean;
+          sort_order?: number;
+          created_at?: string | null;
+        }
+      >;
+      product_costs: Table<
+        { product_id: string; inputs: Json; updated_at: string | null },
+        { product_id: string; inputs: Json; updated_at?: string | null },
+        [
+          {
+            foreignKeyName: "product_costs_product_id_fkey";
+            columns: ["product_id"];
+            isOneToOne: true;
+            referencedRelation: "products";
+            referencedColumns: ["id"];
+          },
+        ]
+      >;
+      customers: Table<
+        {
+          id: string;
+          name: string;
+          phone: string | null;
+          notes: string | null;
+          created_at: string | null;
+        },
+        {
+          id?: string;
+          name: string;
+          phone?: string | null;
+          notes?: string | null;
+          created_at?: string | null;
+        }
+      >;
+      orders: Table<
+        {
+          id: string;
+          number: number;
+          customer_id: string;
+          status: OrderStatus;
+          due_date: string | null;
+          discount_cents: number;
+          shipping_cents: number;
+          notes: string | null;
+          delivered_at: string | null;
+          created_at: string | null;
+          updated_at: string | null;
+        },
+        {
+          id?: string;
+          customer_id: string;
+          status?: OrderStatus;
+          due_date?: string | null;
+          discount_cents?: number;
+          shipping_cents?: number;
+          notes?: string | null;
+          delivered_at?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        },
+        [
+          {
+            foreignKeyName: "orders_customer_id_fkey";
+            columns: ["customer_id"];
+            isOneToOne: false;
+            referencedRelation: "customers";
+            referencedColumns: ["id"];
+          },
+        ]
+      >;
+      order_items: Table<
+        {
+          id: string;
+          order_id: string;
+          product_id: string | null;
+          description: string;
+          quantity: number;
+          unit_price_cents: number;
+          unit_cost_cents: number | null;
+          unit_pass_through_cents: number;
+          cost_inputs: Json | null;
+          sort_order: number;
+        },
+        {
+          id?: string;
+          order_id: string;
+          product_id?: string | null;
+          description: string;
+          quantity: number;
+          unit_price_cents: number;
+          unit_cost_cents?: number | null;
+          unit_pass_through_cents?: number;
+          cost_inputs?: Json | null;
+          sort_order?: number;
+        },
+        [
+          {
+            foreignKeyName: "order_items_order_id_fkey";
+            columns: ["order_id"];
+            isOneToOne: false;
+            referencedRelation: "orders";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "order_items_product_id_fkey";
+            columns: ["product_id"];
+            isOneToOne: false;
+            referencedRelation: "products";
+            referencedColumns: ["id"];
+          },
+        ]
+      >;
+      order_payments: Table<
+        {
+          id: string;
+          order_id: string;
+          amount_cents: number;
+          paid_on: string;
+          method: PaymentMethod;
+          note: string | null;
+          created_at: string | null;
+        },
+        {
+          id?: string;
+          order_id: string;
+          amount_cents: number;
+          paid_on?: string;
+          method?: PaymentMethod;
+          note?: string | null;
+          created_at?: string | null;
+        },
+        [
+          {
+            foreignKeyName: "order_payments_order_id_fkey";
+            columns: ["order_id"];
+            isOneToOne: false;
+            referencedRelation: "orders";
+            referencedColumns: ["id"];
+          },
+        ]
+      >;
+      expenses: Table<
+        {
+          id: string;
+          description: string;
+          category: ExpenseCategory;
+          amount_cents: number;
+          due_date: string;
+          paid_on: string | null;
+          repeat_monthly: boolean;
+          notes: string | null;
+          created_at: string | null;
+        },
+        {
+          id?: string;
+          description: string;
+          category?: ExpenseCategory;
+          amount_cents: number;
+          due_date: string;
+          paid_on?: string | null;
+          repeat_monthly?: boolean;
+          notes?: string | null;
+          created_at?: string | null;
+        }
+      >;
     };
     Views: { [_ in never]: never };
     Functions: {
@@ -194,10 +412,61 @@ export type Database = {
           whatsapp_clicks: number;
         }[];
       };
+      pay_expense: {
+        Args: { p_expense_id: string; p_paid_on: string };
+        Returns: undefined;
+      };
+      finance_months: {
+        Args: { p_from: string; p_to: string };
+        Returns: {
+          month: string;
+          received_cents: number;
+          expenses_paid_cents: number;
+          delivered_count: number;
+          delivered_revenue_cents: number;
+          delivered_cost_cents: number;
+          items_without_cost: number;
+        }[];
+      };
+      finance_open: {
+        Args: { p_today: string };
+        Returns: {
+          receivable_cents: number;
+          receivable_orders: number;
+          payable_cents: number;
+          payable_count: number;
+          overdue_cents: number;
+          overdue_count: number;
+        }[];
+      };
+      finance_top_items: {
+        Args: { p_from: string; p_to: string; p_limit?: number };
+        Returns: {
+          description: string;
+          quantity: number;
+          revenue_cents: number;
+        }[];
+      };
+      save_order: {
+        Args: {
+          p_order_id: string | null;
+          p_customer_id: string;
+          p_due_date: string | null;
+          p_discount_cents: number;
+          p_shipping_cents: number;
+          p_notes: string | null;
+          p_items: Json;
+        };
+        Returns: string;
+      };
     };
     Enums: {
       ar_placement: ArPlacement;
       product_status: ProductStatus;
+      material_category: MaterialCategory;
+      order_status: OrderStatus;
+      payment_method: PaymentMethod;
+      expense_category: ExpenseCategory;
     };
     CompositeTypes: { [_ in never]: never };
   };
