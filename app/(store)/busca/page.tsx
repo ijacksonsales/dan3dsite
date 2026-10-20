@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { ProductGrid } from "@/components/store/product-card";
 import { SearchForm } from "@/components/store/search-form";
@@ -38,8 +39,15 @@ export default async function SearchPage({
             <ProductGrid products={results} />
           ) : (
             <EmptyState title="Não achamos essa peça">
-              Tente outra palavra, ou fale com a gente pelo WhatsApp: muitas
-              peças podem ser feitas sob encomenda.
+              <p>
+                Tente outra palavra, ou peça um orçamento: fazemos sob medida.
+              </p>
+              <Link
+                href="/orcamento"
+                className="mt-4 inline-flex min-h-12 items-center rounded-full bg-primary px-6 text-base font-medium text-primary-foreground hover:bg-espresso"
+              >
+                Pedir orçamento personalizado
+              </Link>
             </EmptyState>
           )}
         </div>

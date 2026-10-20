@@ -3,6 +3,7 @@ import {
   ChartColumnIcon,
   ClipboardListIcon,
   ImagesIcon,
+  InboxIcon,
   PenToolIcon,
   PackageIcon,
   PlusIcon,
@@ -78,6 +79,13 @@ const STORE_SHORTCUTS: Shortcut[] = [
 
 const BUSINESS_SHORTCUTS: Shortcut[] = [
   {
+    href: "/admin/orcamentos",
+    label: "Orçamentos do site",
+    description: "Pedidos que os clientes mandam pela loja",
+    icon: InboxIcon,
+    ready: true,
+  },
+  {
     href: "/admin/pedidos",
     label: "Pedidos",
     description: "Orçamentos, produção e pagamentos",
@@ -125,18 +133,23 @@ const GROUPS: { title: string; shortcuts: Shortcut[] }[] = [
 
 export default async function AdminHomePage() {
   const supabase = await createClient();
-  const [{ count: drafts }, { count: dueSoon }] = await Promise.all([
-    supabase
-      .from("products")
-      .select("id", { count: "exact", head: true })
-      .eq("status", "draft"),
-    // Orders being made that are late or due within 3 days.
-    supabase
-      .from("orders")
-      .select("id", { count: "exact", head: true })
-      .in("status", ["confirmed", "in_production", "ready"])
-      .lte("due_date", addDays(storeToday(), 3)),
-  ]);
+  const [{ count: drafts }, { count: dueSoon }, { count: newQuotes }] =
+    await Promise.all([
+      supabase
+        .from("products")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "draft"),
+      // Orders being made that are late or due within 3 days.
+      supabase
+        .from("orders")
+        .select("id", { count: "exact", head: true })
+        .in("status", ["confirmed", "in_production", "ready"])
+        .lte("due_date", addDays(storeToday(), 3)),
+      supabase
+        .from("quote_requests")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "new"),
+    ]);
 
   return (
     <div className="space-y-6">
@@ -154,6 +167,21 @@ export default async function AdminHomePage() {
         }}
         primary
       />
+
+      {newQuotes ? (
+        <Link
+          href="/admin/orcamentos"
+          className="flex min-h-12 items-center rounded-xl bg-sky-100 px-4 py-3 text-base text-sky-950 hover:bg-sky-200 dark:bg-sky-950 dark:text-sky-100"
+        >
+          <span>
+            <strong>{newQuotes}</strong>{" "}
+            {newQuotes === 1
+              ? "pedido de orçamento novo do site"
+              : "pedidos de orçamento novos do site"}
+            . Ver →
+          </span>
+        </Link>
+      ) : null}
 
       {dueSoon ? (
         <Link

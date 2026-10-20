@@ -329,6 +329,20 @@ Mobile-first. Desempenho alvo: Lighthouse mobile ≥ 90 em Performance nas pági
 
 **Pronto quando:** a dona gera uma imagem a partir de uma descrição e a usa num banner sem sair do painel.
 
+### Fase 11 — Orçamento personalizado (a partir de 2026-10-20)
+
+Primeira escrita de visitante além de `events`: o visitante nunca lê, só envia por uma função que valida tudo.
+
+- [x] Migration: `quote_requests` (nome, WhatsApp, cidade, peças em `jsonb` com tamanho em mm, prazo, observações, peça de referência, situação novo → respondido → arquivado, ligação com o pedido), `submit_quote_request()` (`security definer`, valida campos, até 10 peças, 3 por telefone por hora e 30 por hora no total) e bucket privado `quotes` (visitante só envia até 5 fotos WebP nos 30 min seguintes ao pedido; só a admin vê) — _`20261020120000_quote_requests.sql`_
+- [x] `lib/quotes/` (validação, mensagens do WhatsApp, observações do pedido, fotos) + testes
+- [x] `/orcamento`: dados, peças (várias, com tamanho em cm e quantidade), fotos comprimidas no navegador, prazo e observações; depois de enviar, "Avisar a DAN3D no WhatsApp" com a mensagem pronta. Campo escondido contra robôs
+- [x] Entradas na loja: topo, rodapé, bloco na home, "Peça um orçamento" na página do produto (leva a peça como referência) e busca sem resultado
+- [x] `/admin/orcamentos` (Novos, Respondidos, Arquivados) e `/admin/orcamentos/[id]` (fotos por link temporário, "Responder no WhatsApp", "Criar pedido", arquivar, excluir); aviso de novos na home do painel
+- [x] "Criar pedido": usa o cliente com o mesmo WhatsApp ou cadastra, e abre o novo pedido com as peças, o prazo e as observações preenchidos
+- [x] Migration aplicada no Supabase — _2026-10-20; visitante não lê nem insere direto na tabela (conferido)_
+
+**Pronto quando:** pelo celular, um cliente manda um pedido com 2 peças e uma foto e avisa no WhatsApp; no tablet, a dona vê o pedido e transforma em orçamento com as peças preenchidas.
+
 ---
 
 ## 6. Armadilhas conhecidas

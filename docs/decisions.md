@@ -204,3 +204,14 @@ Formato: data · decisão · motivo.
 - **Decisão:** assinar o Workers Paid (US$ 5/mês), a saída prevista no risco 10 do `PLAN.md`.
 - **Motivo:** o painel dava HTTP 503 depois de quase toda ação. O `wrangler tail` mostrou `Worker exceeded CPU time limit`: no plano gratuito o teto é 10 ms de CPU por requisição, e as páginas do painel usam de 10 a 250 ms (a loja, de 8 a 20 ms, também teve 503). Depois de cada ação, o `router.refresh()` e os prefetches dos links renderizam várias páginas ao mesmo tempo, e algumas passavam do teto.
 - **Depois da assinatura:** requisições com 300–475 ms de CPU passaram com 200, e o uso do painel e da loja não teve mais 503. Não houve mudança de código nem novo deploy.
+
+## 2026-10-20 · Fase 11: orçamento personalizado
+
+- **Pedido pela loja, resposta pelo WhatsApp:** o cliente preenche `/orcamento` e, na confirmação, toca em "Avisar a DAN3D no WhatsApp" (mensagem pronta com o número e as peças). Assim a dona fica sabendo na hora, sem e-mail nem serviço pago.
+- **Visitante não escreve direto na tabela:** não há policy de `insert` em `quote_requests`. O envio passa por `submit_quote_request()` (`security definer`), que valida os campos, remonta as peças só com as chaves conhecidas, aceita só peça de referência publicada e limita a 3 pedidos por telefone por hora e 30 por hora no total (erro `P0429`).
+- **Sem captcha por enquanto** (decisão do dono do projeto): campo escondido contra robôs + limite por hora. Se aparecer spam, o próximo passo é o Cloudflare Turnstile.
+- **Fotos em bucket privado `quotes`**, comprimidas para WebP no navegador e enviadas direto para o Storage. O visitante só pode enviar `{id}/{0-4}.webp` para um pedido novo criado nos últimos 30 minutos (`can_upload_quote_photo()`); não lista, não lê e não sobrescreve. A admin vê por link temporário (1 h).
+- **Fotos apagadas 30 dias depois de arquivar:** a limpeza roda no navegador da admin sempre que ela arquiva um pedido (`removeExpiredQuotePhotos`), sem cron. Apagar pelo SQL não removeria os arquivos do Storage.
+- **Peças em `jsonb`** no próprio pedido de orçamento, em vez de tabela filha: são só texto para a dona ler e viram itens avulsos do pedido.
+- **"Criar pedido"** procura o cliente pelo WhatsApp (ou cadastra) e abre `/admin/pedidos/novo?cliente=…&orcamento=…` com as peças sem preço (a dona calcula cada uma), o prazo e as observações. Ao salvar, o pedido de orçamento fica "Respondido" e ligado ao pedido.
+- **Abrir "Responder no WhatsApp"** num pedido novo já o marca como respondido.

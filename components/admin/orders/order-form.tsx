@@ -82,7 +82,8 @@ export interface OrderFormInitial {
     product_id: string | null;
     description: string;
     quantity: number;
-    unit_price_cents: number;
+    /** null: not priced yet (pieces from a quote request). */
+    unit_price_cents: number | null;
     unit_cost_cents: number | null;
     unit_pass_through_cents: number;
     cost_inputs: CostInputs | null;
@@ -96,11 +97,14 @@ export function OrderForm({
   options,
   initial,
   fromCalculator = false,
+  quoteRequestId = null,
 }: {
   options: OrderFormOptions;
   initial: OrderFormInitial;
   /** Adds the calculation sent by the calculator page ("Usar num pedido"). */
   fromCalculator?: boolean;
+  /** Site quote request this order answers ("Criar pedido"). */
+  quoteRequestId?: string | null;
 }) {
   const router = useRouter();
   const toast = useToast();
@@ -115,7 +119,10 @@ export function OrderForm({
       productId: item.product_id,
       description: item.description,
       quantity: item.quantity,
-      price: formatMoneyInput(item.unit_price_cents),
+      price:
+        item.unit_price_cents == null
+          ? ""
+          : formatMoneyInput(item.unit_price_cents),
       unitCostCents: item.unit_cost_cents,
       unitPassThroughCents: item.unit_pass_through_cents,
       costInputs: item.cost_inputs,
@@ -309,6 +316,14 @@ export function OrderForm({
         "Não foi possível salvar. Confira a internet e tente de novo.",
       );
       return;
+    }
+    if (quoteRequestId) {
+      // Links the request to its order; the order is already saved, so a
+      // failure here only leaves the request without the "Ver pedido" link.
+      await createClient()
+        .from("quote_requests")
+        .update({ order_id: id, status: "answered" })
+        .eq("id", quoteRequestId);
     }
     toast(isNew ? "Orçamento criado." : "Pedido salvo.");
     router.push(`/admin/pedidos/${id}`);

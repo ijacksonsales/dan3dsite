@@ -7,6 +7,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const { products, categories } = await getSitemapEntries();
   return [
     { url: absoluteUrl("/"), changeFrequency: "daily", priority: 1 },
+    {
+      url: absoluteUrl("/orcamento"),
+      changeFrequency: "monthly",
+      priority: 0.5,
+    },
     ...categories.map((c) => ({
       url: absoluteUrl(`/c/${c.slug}`),
       changeFrequency: "weekly" as const,

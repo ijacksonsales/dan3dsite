@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { BannerCarousel } from "@/components/store/banner-carousel";
 import { CategoryTiles } from "@/components/store/category-tiles";
 import { ProductGrid, ProductRow } from "@/components/store/product-card";
@@ -63,6 +65,8 @@ export default async function HomePage() {
         )}
       </Section>
 
+      <CustomQuote />
+
       <HowItWorks />
     </div>
   );
@@ -121,5 +125,33 @@ function HowItWorks() {
         ))}
       </ol>
     </Section>
+  );
+}
+
+/** "Didn't find it?": leads to the custom quote form. */
+function CustomQuote() {
+  return (
+    <section className="mx-auto w-full max-w-6xl px-4">
+      <div className="flex flex-col gap-5 rounded-3xl bg-espresso px-6 py-8 text-sand sm:flex-row sm:items-center sm:justify-between sm:px-10">
+        <div className="space-y-2">
+          <p className="font-heading text-xs tracking-[0.25em] text-sand/70 uppercase">
+            Não achou o que queria?
+          </p>
+          <h2 className="font-heading text-2xl tracking-wide text-balance">
+            Fazemos sob medida
+          </h2>
+          <p className="max-w-md text-pretty text-sand/80">
+            Conte a ideia, o tamanho e mande uma foto de referência. A gente
+            responde pelo WhatsApp.
+          </p>
+        </div>
+        <Link
+          href="/orcamento"
+          className="inline-flex min-h-12 shrink-0 items-center justify-center rounded-full bg-sand px-6 text-base font-medium text-espresso hover:bg-background"
+        >
+          Pedir orçamento
+        </Link>
+      </div>
+    </section>
   );
 }

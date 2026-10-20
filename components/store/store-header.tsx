@@ -1,4 +1,4 @@
-import { SearchIcon } from "lucide-react";
+import { PencilRulerIcon, SearchIcon } from "lucide-react";
 import Link from "next/link";
 
 import { getCategories } from "@/lib/store/queries";
@@ -24,9 +24,16 @@ export async function StoreHeader() {
         <Link
           href="/busca"
           aria-label="Buscar peças"
-          className="-mr-2 ml-auto grid size-12 place-items-center rounded-full hover:bg-secondary md:hidden"
+          className="ml-auto grid size-12 place-items-center rounded-full hover:bg-secondary md:hidden"
         >
           <SearchIcon className="size-5" />
+        </Link>
+        <Link
+          href="/orcamento"
+          className="-mr-2 inline-flex min-h-12 shrink-0 items-center gap-2 rounded-full px-3 text-sm font-medium hover:bg-secondary md:-mr-3"
+        >
+          <PencilRulerIcon className="size-5 text-primary" />
+          Orçamento
         </Link>
       </div>
       <CategoryNav categories={categories} />

@@ -25,6 +25,15 @@ export type OrderStatus =
 export type PaymentMethod = "pix" | "cash" | "card" | "other";
 export type ExpenseCategory =
   "filament" | "materials" | "packaging" | "energy" | "machine" | "other";
+export type QuoteRequestStatus = "new" | "answered" | "archived";
+
+/** One piece in `quote_requests.items` (normalized by submit_quote_request). */
+export interface QuoteRequestItem {
+  description: string;
+  quantity: number;
+  height_mm: number | null;
+  width_mm: number | null;
+}
 
 export type Database = {
   public: {
@@ -399,6 +408,57 @@ export type Database = {
           created_at?: string | null;
         }
       >;
+      quote_requests: Table<
+        {
+          id: string;
+          number: number;
+          name: string;
+          phone: string;
+          city: string | null;
+          items: Json;
+          needed_by: string | null;
+          notes: string | null;
+          product_id: string | null;
+          status: QuoteRequestStatus;
+          order_id: string | null;
+          archived_at: string | null;
+          photos_removed: boolean;
+          created_at: string;
+          updated_at: string | null;
+        },
+        {
+          id?: string;
+          name: string;
+          phone: string;
+          city?: string | null;
+          items: Json;
+          needed_by?: string | null;
+          notes?: string | null;
+          product_id?: string | null;
+          status?: QuoteRequestStatus;
+          order_id?: string | null;
+          archived_at?: string | null;
+          photos_removed?: boolean;
+          created_at?: string;
+          updated_at?: string | null;
+        },
+        [
+          {
+            foreignKeyName: "quote_requests_product_id_fkey";
+            columns: ["product_id"];
+            isOneToOne: false;
+            referencedRelation: "products";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "quote_requests_order_id_fkey";
+            columns: ["order_id"];
+            isOneToOne: false;
+            referencedRelation: "orders";
+            referencedColumns: ["id"];
+          },
+        ]
+      >;
     };
     Views: { [_ in never]: never };
     Functions: {
@@ -459,6 +519,18 @@ export type Database = {
         };
         Returns: string;
       };
+      submit_quote_request: {
+        Args: {
+          p_name: string;
+          p_phone: string;
+          p_city: string | null;
+          p_items: Json;
+          p_needed_by: string | null;
+          p_notes: string | null;
+          p_product_id: string | null;
+        };
+        Returns: { id: string; number: number }[];
+      };
     };
     Enums: {
       ar_placement: ArPlacement;
@@ -467,6 +539,7 @@ export type Database = {
       order_status: OrderStatus;
       payment_method: PaymentMethod;
       expense_category: ExpenseCategory;
+      quote_request_status: QuoteRequestStatus;
     };
     CompositeTypes: { [_ in never]: never };
   };

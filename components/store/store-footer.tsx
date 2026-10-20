@@ -1,3 +1,4 @@
+import { PencilRulerIcon } from "lucide-react";
 import Link from "next/link";
 
 import { getCategories, getSettings } from "@/lib/store/queries";
@@ -54,6 +55,15 @@ export async function StoreFooter() {
             Fale com a gente
           </h2>
           <ul className="mt-2">
+            <li>
+              <Link
+                href="/orcamento"
+                className="flex min-h-12 items-center gap-3 text-sand/90 hover:text-sand"
+              >
+                <PencilRulerIcon className="size-5" />
+                Orçamento personalizado
+              </Link>
+            </li>
             {whatsapp && (
               <li>
                 <a
@@ -79,9 +89,6 @@ export async function StoreFooter() {
                   Instagram
                 </a>
               </li>
-            )}
-            {!whatsapp && !settings?.instagram_url && (
-              <li className="text-sm text-sand/60">Contatos em breve.</li>
             )}
           </ul>
         </div>

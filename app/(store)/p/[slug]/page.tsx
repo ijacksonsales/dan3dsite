@@ -140,6 +140,16 @@ export default async function ProductPage({ params }: PageProps<"/p/[slug]">) {
             className="hidden lg:flex"
           />
 
+          <p className="rounded-2xl bg-secondary px-4 py-3 text-base">
+            Quer em outro tamanho, cor ou com nome?{" "}
+            <Link
+              href={`/orcamento?peca=${encodeURIComponent(product.slug)}`}
+              className="font-medium text-primary underline underline-offset-4"
+            >
+              Peça um orçamento
+            </Link>
+          </p>
+
           {product.description && (
             <section aria-labelledby="sobre">
               <h2
