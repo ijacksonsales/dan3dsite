@@ -198,3 +198,9 @@ Formato: data · decisão · motivo.
 - **SVG pensado para o Bambu Studio:** só preenchimentos, sem contorno (`stroke`), com `viewBox` e largura/altura. O fundo é a cor mais comum na borda da imagem; áreas transparentes do PNG já ficam de fora.
 - **Esconder cores não refaz o traçado:** o SVG é remontado na hora a partir do resultado guardado. Mudar nº de cores, suavização ou manchas refaz o traçado (com uma pausa de 350 ms para não refazer a cada toque).
 - **Prévia como imagem** (`<img src="data:image/svg+xml…">`), nunca inserida como HTML na página.
+
+## 2026-10-20 · Plano pago do Workers
+
+- **Decisão:** assinar o Workers Paid (US$ 5/mês), a saída prevista no risco 10 do `PLAN.md`.
+- **Motivo:** o painel dava HTTP 503 depois de quase toda ação. O `wrangler tail` mostrou `Worker exceeded CPU time limit`: no plano gratuito o teto é 10 ms de CPU por requisição, e as páginas do painel usam de 10 a 250 ms (a loja, de 8 a 20 ms, também teve 503). Depois de cada ação, o `router.refresh()` e os prefetches dos links renderizam várias páginas ao mesmo tempo, e algumas passavam do teto.
+- **Depois da assinatura:** requisições com 300–475 ms de CPU passaram com 200, e o uso do painel e da loja não teve mais 503. Não houve mudança de código nem novo deploy.
